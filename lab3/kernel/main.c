@@ -24,7 +24,7 @@ typedef enum {FALSE, TRUE} bool;
 #define IRQ_VECT_ADDR 0x18
 #define PC_OFFSET 0x08
 
-#define INTERVAL 325000
+#define INTERVAL 32500
 #define OSTMR_0_BIT 0x04000000
 
 // Cannot write to this address. kernel.bin loaded here. Stack grows down.
@@ -43,7 +43,7 @@ typedef enum {FALSE, TRUE} bool;
 
 
 uint32_t global_data;
-unsigned long global_time;
+volatile unsigned long global_time;
 
 /* Checks the SWI Vector Table. */
 bool check_exception_vector(int vector_address) {
@@ -182,15 +182,19 @@ ssize_t read_handler(int fd, void *buf, size_t count) {
 
 unsigned long time_handler()
 {
-    return global_time; //the numbero of milliseconds that have passed
+    return global_time/1000; //the numbero of milliseconds that have passed
 }
 
 //NOTE: do we have to disable other interupts and sys calls? --------------- **********
 /* Suspends the excution of the current task for a given time */
 void sleep_handler(unsigned long millisDelay)
 {   
-    usigned long currentTime = global_time;
-    while(currentTime + millisDelay <= global_time);
+    unsigned long currentTime = global_time/1000;
+    while((currentTime + millisDelay) >= global_time/1000)
+    {
+        printf("sleep: global_time=%lu\n", global_time);
+    }
+
 }
 
 void C_Timer_0_Handler()
@@ -198,13 +202,13 @@ void C_Timer_0_Handler()
 
     /* Reset counter */
     reg_write(OSTMR_OSCR_ADDR, 0);
+    
     /* Acknowledge match */
     reg_set(OSTMR_OSCR_ADDR, OSTMR_OSSR_M0);
+    
     /* Increment global time */
     global_time += 10;
-
-    if((global_time % 1000) == 0)
-        printf("global_time = %ld\n", global_time);
+    printf("global_time = %ld\n", global_time);
 }
 
 /* C_SWI_Handler uses SWI number to call the appropriate function. */
@@ -230,7 +234,7 @@ int C_SWI_Handler(int swiNum, int *regs) {
         // void sleep(__);
         case SLEEP_SWI:
             printf("Sleep SWI Call ...\n");
-            sleep_handler();
+            sleep_handler((unsigned long)regs[0]);
             break;
         // void time(__);
         case TIME_SWI:
@@ -297,6 +301,7 @@ int kmain(int argc, char** argv, uint32_t table)
     *spTop = argc;
 
     /** Jump to user program. **/
+    printf("Calling user progrm ...\n");
     global_time = 0;
     int usr_prog_status = user_setup(spTop);
 
