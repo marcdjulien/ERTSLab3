@@ -178,14 +178,19 @@ ssize_t read_handler(int fd, void *buf, size_t count) {
     return i;
 }
 
-void time_handler()
-{
+/* returns the time in milliseconds that have elapsed since the kernel booted up */
 
+unsigned long time_handler()
+{
+    return global_time; //the numbero of milliseconds that have passed
 }
 
-void sleep_handler()
-{
-
+//NOTE: do we have to disable other interupts and sys calls? --------------- **********
+/* Suspends the excution of the current task for a given time */
+void sleep_handler(unsigned long millisDelay)
+{   
+    usigned long currentTime = global_time;
+    while(currentTime + millisDelay <= global_time);
 }
 
 void C_Timer_0_Handler()
