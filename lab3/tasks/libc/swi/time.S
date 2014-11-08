@@ -13,7 +13,7 @@
 
 FUNC(time)
 	@ Add code here.  Put your name at the top.
-	swi SLEEP_SWI
+	swi TIME_SWI
 
     @ Store the absolute value of return value in errno
     neg r0, r0
