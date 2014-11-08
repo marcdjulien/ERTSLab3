@@ -10,5 +10,5 @@
 
 	.global	_start
 _start:
-	mov	r0, #42
+	mov	r0, #43
 	swi	EXIT_SWI
