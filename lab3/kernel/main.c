@@ -17,14 +17,15 @@
 #include "exit_handler.h"
 
 typedef enum {FALSE, TRUE} bool;
-#define bit_isset(val, i) (!(((val) >> (i) == 0)))
+#define bit_isset(val, i) (!(((val) & (1<<(i))) == 0))
 
 // 0xe59ff014 (LDR pc, [pc, 0x14]) --> 0x014 through masking
 #define SWI_VECT_ADDR 0x08
 #define IRQ_VECT_ADDR 0x18
 #define PC_OFFSET 0x08
 
-#define INTERVAL 3250000
+#define INTERVAL 32500//000
+#define OSTMR_0_BIT 0x04000000
 
 // Cannot write to this address. kernel.bin loaded here. Stack grows down.
 #define USER_STACK_TOP 0xa3000000
@@ -71,7 +72,7 @@ void wire_handler(int vector_address, void *new_handler, int *oldinstr_1, int *o
 
     // Wire in our own: LDR pc, [pc, #-4] = 0xe51ff004
     *handler_addr = 0xe51ff004;
-    *(handler_addr + 1) = (int) &new_handler; // New  handler.
+    *(handler_addr + 1) = (int)new_handler; // New  handler.
 
     return;
 
@@ -173,13 +174,23 @@ ssize_t read_handler(int fd, void *buf, size_t count) {
     return i;
 }
 
+void time_handler()
+{
+
+}
+
+void sleep_handler()
+{
+
+}
+
 void C_Timer_0_Handler()
 {
+    //Todo: Increment a global counter
     /* Reset counter */
     reg_write(OSTMR_OSCR_ADDR, 0);
     /* Acknowledge match */
     reg_set(OSTMR_OSCR_ADDR, OSTMR_OSSR_M0);
-    printf("Timer!\n");
 }
 
 /* C_SWI_Handler uses SWI number to call the appropriate function. */
@@ -202,6 +213,16 @@ int C_SWI_Handler(int swiNum, int *regs) {
             printf("Exit SWI Call ...\n");
             exit_handler((int) regs[0]); // never returns
             break;
+        // void sleep(__);
+        case SLEEP_SWI:
+            printf("Sleep SWI Call ...\n");
+            sleep_handler();
+            break;
+        // void time(__);
+        case TIME_SWI:
+            printf("Time SWI Call ...\n");
+            time_handler();
+            break;
         default:
             printf("Error in ref C_SWI_Handler: Invalid SWI number.");
             exit_handler(BAD_CODE); // never returns
@@ -212,10 +233,9 @@ int C_SWI_Handler(int swiNum, int *regs) {
 
 void C_IRQ_Handler() 
 {
-    uint32_t icmr = reg_read(INT_ICLR_ADDR);
     uint32_t icpr = reg_read(INT_ICPR_ADDR);
 
-    if(bit_isset(icmr, INT_OSTMR_0) && bit_isset(icpr, INT_OSTMR_0))
+    if(bit_isset(icpr, INT_OSTMR_0))
         C_Timer_0_Handler();
 
 }
@@ -223,6 +243,7 @@ void C_IRQ_Handler()
 uint32_t global_data;
 int kmain(int argc, char** argv, uint32_t table)
 {
+    
     app_startup(); /* Note that app_startup() sets all uninitialized and */ 
             /* zero global variables to zero. Make sure to consider */
             /* any implications on code executed before this. */
@@ -241,11 +262,18 @@ int kmain(int argc, char** argv, uint32_t table)
    
     /* Configure IRQ for timer */
     uint32_t old_iclr = reg_read(INT_ICLR_ADDR);
-    reg_clear(INT_ICLR_ADDR, 0x04000000);
+    reg_clear(INT_ICLR_ADDR, OSTMR_0_BIT); /* Clear bit to generate irq's */
+    reg_set(INT_ICMR_ADDR, OSTMR_0_BIT);   /* Set bit to enable irq's */
+    //reg_set(INT_ICMR_ADDR, 0x3C000000);   /* Set bit to enable irq's */
 
     /* Set up timer */    
     reg_write(OSTMR_OSMR_ADDR(0), INTERVAL); /* Set interval */
     reg_set(OSTMR_OIER_ADDR, OSTMR_OIER_E0); /* Enable match 0 */
+    reg_write(OSTMR_OSCR_ADDR, 0);           /* Reset counter */
+
+    printf("ICMR  = %x\n", (int)reg_read(INT_ICMR_ADDR));
+    printf("OSMR0 = %x\n", (int)reg_read(OSTMR_OSMR_ADDR(0)));
+    printf("OSCR  = %x\n", (int)reg_read(OSTMR_OSCR_ADDR));    
 
     // Copy argc and argv to user stack in the right order.
     int *spTop = ((int *) USER_STACK_TOP) - 1;
@@ -255,7 +283,6 @@ int kmain(int argc, char** argv, uint32_t table)
         spTop--;
     }
     *spTop = argc;
-
 
     /** Jump to user program. **/
     int usr_prog_status = user_setup(spTop);

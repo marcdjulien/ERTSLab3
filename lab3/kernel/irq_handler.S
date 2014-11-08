@@ -11,6 +11,7 @@
 
     .global irq_handler
 irq_handler:
+    mov     sp, #0xA2000000
     sub     sp, sp, #4
     stmfd   sp!, {r0-r12, lr}
 
@@ -27,9 +28,7 @@ irq_handler:
     ldr     r2, [sp, #14*4]
     msr     spsr, r2
 
-    @ Discard the r0 on the stack (r0 has ret value).
-    add     sp, sp, #4
-    ldmfd   sp!, {r1-r12, lr}
+    ldmfd   sp!, {r0-r12, lr}
 
     @ remove space used to store spsr
     add     sp, sp, #4

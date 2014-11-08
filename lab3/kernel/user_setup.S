@@ -5,11 +5,12 @@
 @
 @ Hint:
 @   CPSR:
-@       N|Z|C|V| [27:9] |I|F|T|M[4:0]
+@       N|Z|C|V| [27:9] |I|F|T| M[4:0]
 @   I -> 1
 @   F -> 1
 @   T -> T
 @   CPSR_SVC = 0x10011 -> CPSR_USER = 0x10000
+#include <arm/timer.h>
 
     .extern user_setup_stack_ptr
 
@@ -29,10 +30,16 @@ user_setup:
 
     @ change mode to USER
     mrs     r2, cpsr
-    orr     r2, r2, #0x0C0  @ Mask the flag bits.
+    orr     r2, r2, #0x040  @ Mask FIQ flag bits.
     bic     r2, r2, #0x003  @ Change mode bits to user.
+    bic     r2, r2, #0x080  @ Enable IRQs
     msr     cpsr, r2
 
+    @ reset timer counter
+    mov     r3, #0
+    ldr     r4, =OSTMR_OSCR_ADDR
+    str     r3, [r4]
+    
     @ set up user stack from spTop passed in from kernel.c
     mov     sp, r0
 
