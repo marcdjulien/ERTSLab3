@@ -24,7 +24,7 @@ typedef enum {FALSE, TRUE} bool;
 #define IRQ_VECT_ADDR 0x18
 #define PC_OFFSET 0x08
 
-#define INTERVAL 32500//000
+#define INTERVAL 325000
 #define OSTMR_0_BIT 0x04000000
 
 // Cannot write to this address. kernel.bin loaded here. Stack grows down.
@@ -40,6 +40,10 @@ typedef enum {FALSE, TRUE} bool;
 #define SFROM_END 0x00ffffff
 #define SDRAM_START 0xa0000000
 #define SDRAM_END 0xa3ffffff
+
+
+uint32_t global_data;
+unsigned long global_time;
 
 /* Checks the SWI Vector Table. */
 bool check_exception_vector(int vector_address) {
@@ -186,11 +190,16 @@ void sleep_handler()
 
 void C_Timer_0_Handler()
 {
-    //Todo: Increment a global counter
+
     /* Reset counter */
     reg_write(OSTMR_OSCR_ADDR, 0);
     /* Acknowledge match */
     reg_set(OSTMR_OSCR_ADDR, OSTMR_OSSR_M0);
+    /* Increment global time */
+    global_time += 10;
+
+    if((global_time % 1000) == 0)
+        printf("global_time = %ld\n", global_time);
 }
 
 /* C_SWI_Handler uses SWI number to call the appropriate function. */
@@ -240,13 +249,12 @@ void C_IRQ_Handler()
 
 }
 
-uint32_t global_data;
 int kmain(int argc, char** argv, uint32_t table)
 {
     
     app_startup(); /* Note that app_startup() sets all uninitialized and */ 
-            /* zero global variables to zero. Make sure to consider */
-            /* any implications on code executed before this. */
+                   /* zero global variables to zero. Make sure to consider */
+                   /* any implications on code executed before this. */
     global_data = table;
 
     /** Wire in the new handlers. **/
@@ -262,9 +270,8 @@ int kmain(int argc, char** argv, uint32_t table)
    
     /* Configure IRQ for timer */
     uint32_t old_iclr = reg_read(INT_ICLR_ADDR);
-    reg_clear(INT_ICLR_ADDR, OSTMR_0_BIT); /* Clear bit to generate irq's */
-    reg_set(INT_ICMR_ADDR, OSTMR_0_BIT);   /* Set bit to enable irq's */
-    //reg_set(INT_ICMR_ADDR, 0x3C000000);   /* Set bit to enable irq's */
+    reg_clear(INT_ICLR_ADDR, OSTMR_0_BIT);  /* Clear bit to generate irq's */
+    reg_set(INT_ICMR_ADDR, OSTMR_0_BIT);    /* Set bit to enable irq's */
 
     /* Set up timer */    
     reg_write(OSTMR_OSMR_ADDR(0), INTERVAL); /* Set interval */
@@ -285,14 +292,16 @@ int kmain(int argc, char** argv, uint32_t table)
     *spTop = argc;
 
     /** Jump to user program. **/
+    global_time = 0;
     int usr_prog_status = user_setup(spTop);
 
 
     /** Restore SWI Handler. **/
     restore_handlers(SWI_VECT_ADDR, old_swi_instr_1, old_swi_instr_2);
     restore_handlers(IRQ_VECT_ADDR, old_irq_instr_1, old_irq_instr_2);
-
     reg_write(INT_ICLR_ADDR, old_iclr);
+
+    printf("global_time final = %ld\n", global_time);
 
     return usr_prog_status;
 }
