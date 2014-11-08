@@ -1,11 +1,11 @@
-/home/marc/18349/lab3/lab3/kernel/arm/psr.o:  \
- /home/marc/18349/lab3/lab3/kernel/arm/psr.c \
-  /home/marc/18349/lab3/lab3/kernel/include/types.h \
-  /home/marc/18349/lab3/lab3/kernel/include/arm/psr.h \
-  /home/marc/18349/lab3/lab3/kernel/include/inline.h
+/home/marc/18349/ERTSLab3/lab3/kernel/arm/psr.o:  \
+ /home/marc/18349/ERTSLab3/lab3/kernel/arm/psr.c \
+  /home/marc/18349/ERTSLab3/lab3/kernel/include/types.h \
+  /home/marc/18349/ERTSLab3/lab3/kernel/include/arm/psr.h \
+  /home/marc/18349/ERTSLab3/lab3/kernel/include/inline.h
 
-/home/marc/18349/lab3/lab3/kernel/include/types.h:
+/home/marc/18349/ERTSLab3/lab3/kernel/include/types.h:
 
-/home/marc/18349/lab3/lab3/kernel/include/arm/psr.h:
+/home/marc/18349/ERTSLab3/lab3/kernel/include/arm/psr.h:
 
-/home/marc/18349/lab3/lab3/kernel/include/inline.h:
+/home/marc/18349/ERTSLab3/lab3/kernel/include/inline.h:

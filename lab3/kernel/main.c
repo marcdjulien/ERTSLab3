@@ -185,17 +185,21 @@ void C_Timer_0_Handler()
 /* C_SWI_Handler uses SWI number to call the appropriate function. */
 int C_SWI_Handler(int swiNum, int *regs) {
     int count = 0;
+    printf("C_SWI_Handler ...\n");
     switch (swiNum) {
         // ssize_t read(int fd, void *buf, size_t count);
         case READ_SWI:
+            printf("Read SWI Call ...\n");
             count = read_handler(regs[0], (void *) regs[1], (size_t) regs[2]);
             break;
         // ssize_t write(int fd, const void *buf, size_t count);
         case WRITE_SWI:
+            printf("Write SWI Call ...\n");
             count = write_handler((int) regs[0], (void *) regs[1], (size_t) regs[2]);
             break;
         // void exit(int status);
         case EXIT_SWI:
+            printf("Exit SWI Call ...\n");
             exit_handler((int) regs[0]); // never returns
             break;
         default:
@@ -224,24 +228,24 @@ int kmain(int argc, char** argv, uint32_t table)
             /* any implications on code executed before this. */
     global_data = table;
 
-    if (check_exception_vector(SWI_VECT_ADDR) == FALSE)
-        return BAD_CODE;
-    if (check_exception_vector(IRQ_VECT_ADDR) == FALSE)
-        return BAD_CODE;
-
     /** Wire in the new handlers. **/
     int old_irq_instr_1, old_irq_instr_2, old_swi_instr_1, old_swi_instr_2;
-    wire_handler(SWI_VECT_ADDR, &C_SWI_Handler, &old_swi_instr_1, &old_swi_instr_2);
-    wire_handler(IRQ_VECT_ADDR, &C_IRQ_Handler, &old_irq_instr_1, &old_irq_instr_2);
+    if (check_exception_vector(SWI_VECT_ADDR) == FALSE)
+        return BAD_CODE;
+    wire_handler(SWI_VECT_ADDR, &swi_handler, &old_swi_instr_1, &old_swi_instr_2);
+    
+    if (check_exception_vector(IRQ_VECT_ADDR) == FALSE)
+        return BAD_CODE;
+    wire_handler(IRQ_VECT_ADDR, &irq_handler, &old_irq_instr_1, &old_irq_instr_2);
+    
    
     /* Configure IRQ for timer */
     uint32_t old_iclr = reg_read(INT_ICLR_ADDR);
     reg_clear(INT_ICLR_ADDR, 0x04000000);
 
-    /* Set up timer */
+    /* Set up timer */    
     reg_write(OSTMR_OSMR_ADDR(0), INTERVAL); /* Set interval */
     reg_set(OSTMR_OIER_ADDR, OSTMR_OIER_E0); /* Enable match 0 */
-
 
     // Copy argc and argv to user stack in the right order.
     int *spTop = ((int *) USER_STACK_TOP) - 1;
@@ -260,6 +264,7 @@ int kmain(int argc, char** argv, uint32_t table)
     /** Restore SWI Handler. **/
     restore_handlers(SWI_VECT_ADDR, old_swi_instr_1, old_swi_instr_2);
     restore_handlers(IRQ_VECT_ADDR, old_irq_instr_1, old_irq_instr_2);
+
     reg_write(INT_ICLR_ADDR, old_iclr);
 
     return usr_prog_status;
