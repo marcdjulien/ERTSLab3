@@ -1,0 +1,5 @@
+/home/marc/18349/lab3/lab3/kernel/start.o:  \
+ /home/marc/18349/lab3/lab3/kernel/start.S \
+  /home/marc/18349/lab3/lab3/kernel/include/asm.h
+
+/home/marc/18349/lab3/lab3/kernel/include/asm.h:
