@@ -120,7 +120,6 @@ int check_mem(char *buf, int count, unsigned start, unsigned end) {
 ssize_t write_handler(int fd, const void *buf, size_t count) {
 
     // Check for invalid memory range or file descriptors
-    printf("write(%d, %p, %d)\n", fd, buf, (int)count);
     if (check_mem((char *) buf, (int) count, SDRAM_START, SDRAM_END) == FALSE &&
         check_mem((char *) buf, (int) count, SFROM_START, SFROM_END) == FALSE) {
         exit_handler(-EFAULT);
