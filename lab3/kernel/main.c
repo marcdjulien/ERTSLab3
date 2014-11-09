@@ -182,7 +182,7 @@ ssize_t read_handler(int fd, void *buf, size_t count) {
 
 unsigned long time_handler()
 {
-    return global_time; //the numbero of milliseconds that have passed
+    return global_time; //the number of milliseconds that have passed
 }
 
 /* Suspends the excution of the current task for a given time */

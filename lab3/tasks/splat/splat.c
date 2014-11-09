@@ -2,7 +2,7 @@
  *
  * @brief Displays a spinning cursor.
  * @author Marc-Daniel Julien <mjulien@andrew.cmu.edu>
- * @author Jeffery He <__@andrew.cmu.edu>
+ * @author Jeffery He <jmhe@andrew.cmu.edu>
  * 
  * Links to libc.
  */

@@ -9,5 +9,6 @@
 #define GLOBALS_H
 
 extern int user_setup_stack_ptr;
+extern volatile unsigned long global_time;
 
 #endif /* GLOBALS_H */

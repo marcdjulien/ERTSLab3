@@ -1,2 +1,14 @@
-/home/marc/18349/lab3/lab3/tasks/splat/splat.o:  \
- /home/marc/18349/lab3/lab3/tasks/splat/splat.c
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/splat/splat.o:  \
+ /home/jeffrey/Documents/ERTSLab3/lab3/tasks/splat/splat.c \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/unistd.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/fileno.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/sys/types.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/types.h
+
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/unistd.h:
+
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/fileno.h:
+
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/sys/types.h:
+
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/types.h:
