@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 
 		//calculating time it took to type message
         unsigned long timeElapsed = time() - startTime;
-
+        timeElapsed = 0;
         // Error, return 1 -> exit with status 1
         if(read_count <= 0) { return 1; }
 
@@ -50,19 +50,19 @@ int main(int argc, char** argv)
 
         // If error on write, exit with status 1
         // Echo's the user input
-        if (write(STDOUT_FILENO, input_buf, read_count) < 0) {
-            return 1;
-        }
+        //if (write(STDOUT_FILENO, input_buf, read_count) < 0) {
+        //    return 1;
+        //}
         
         //convert time into a string for write function
-		char* timeElapsedStr = (char *)timeElapsed;        
+		//char* timeElapsedStr = (char *)timeElapsed;        
 
         // Displays the time it took to type the message
-        if (write(STDOUT_FILENO, (const void *)timeElapsedStr, sizeof(timeElapsedStr)-1 ) < 0) {
+        if (write(STDOUT_FILENO, (const void *)timeElapsed, sizeof(timeElapsed)-1 ) < 0) {
             return 1;
         }
 
-        printf("The time it took you to write your message was %ld seconds\n", timeElapsed);
+        //printf("The time it took you to write your message was %ld seconds\n", (unsigned long)timeElapsed);
 
     }
 	return 0;
