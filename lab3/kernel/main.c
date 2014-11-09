@@ -41,9 +41,9 @@ typedef enum {FALSE, TRUE} bool;
 #define SDRAM_START 0xa0000000
 #define SDRAM_END 0xa3ffffff
 
+#define IRQ_STACK_SIZE 0x100000
 
 uint32_t global_data;
-volatile unsigned long global_time;
 
 /* Checks the SWI Vector Table. */
 bool check_exception_vector(int vector_address) {
@@ -120,6 +120,7 @@ int check_mem(char *buf, int count, unsigned start, unsigned end) {
 ssize_t write_handler(int fd, const void *buf, size_t count) {
 
     // Check for invalid memory range or file descriptors
+    printf("write(%d, %p, %d)\n", fd, buf, (int)count);
     if (check_mem((char *) buf, (int) count, SDRAM_START, SDRAM_END) == FALSE &&
         check_mem((char *) buf, (int) count, SFROM_START, SFROM_END) == FALSE) {
         exit_handler(-EFAULT);
@@ -178,81 +179,76 @@ ssize_t read_handler(int fd, void *buf, size_t count) {
     return i;
 }
 
-/* returns the time in milliseconds that have elapsed since the kernel booted up */
+/* Returns the time in milliseconds that have elapsed since the kernel booted up */
 
 unsigned long time_handler()
 {
-    return global_time/1000; //the numbero of milliseconds that have passed
+    return global_time; //the numbero of milliseconds that have passed
 }
 
-//NOTE: do we have to disable other interupts and sys calls? --------------- **********
 /* Suspends the excution of the current task for a given time */
 void sleep_handler(unsigned long millisDelay)
 {   
-    unsigned long currentTime = global_time/1000;
-    while((currentTime + millisDelay) >= global_time/1000)
-    {
-        printf("sleep: global_time=%lu\n", global_time);
-    }
-
+    unsigned long currentTime = global_time;
+    while((currentTime + millisDelay) >= global_time);    
 }
 
+/* Called when OSCR matches OSMR_0 (ie, every 10ms) */
 void C_Timer_0_Handler()
 {
 
-    /* Reset counter */
-    reg_write(OSTMR_OSCR_ADDR, 0);
-    
+    /* Set next interval time*/
+    reg_write(OSTMR_OSMR_ADDR(0), reg_read(OSTMR_OSCR_ADDR)+INTERVAL); 
+
     /* Acknowledge match */
-    reg_set(OSTMR_OSCR_ADDR, OSTMR_OSSR_M0);
+    reg_set(OSTMR_OSSR_ADDR, OSTMR_OSSR_M0);
     
     /* Increment global time */
     global_time += 10;
-    printf("global_time = %ld\n", global_time);
 }
 
 /* C_SWI_Handler uses SWI number to call the appropriate function. */
-int C_SWI_Handler(int swiNum, int *regs) {
-    int count = 0;
-    printf("C_SWI_Handler ...\n");
-    switch (swiNum) {
+int C_SWI_Handler(int swiNum, int *regs) 
+{    
+    switch (swiNum) 
+    {       
         // ssize_t read(int fd, void *buf, size_t count);
         case READ_SWI:
-            printf("Read SWI Call ...\n");
-            count = read_handler(regs[0], (void *) regs[1], (size_t) regs[2]);
-            break;
+            return read_handler(regs[0], (void *) regs[1], (size_t) regs[2]);
+        
         // ssize_t write(int fd, const void *buf, size_t count);
         case WRITE_SWI:
-            printf("Write SWI Call ...\n");
-            count = write_handler((int) regs[0], (void *) regs[1], (size_t) regs[2]);
-            break;
+            return write_handler((int) regs[0], (void *) regs[1], (size_t) regs[2]);
+        
         // void exit(int status);
         case EXIT_SWI:
-            printf("Exit SWI Call ...\n");
             exit_handler((int) regs[0]); // never returns
-            break;
-        // void sleep(__);
+            return -1;
+        
+        // void sleep(unsigned long delay);
         case SLEEP_SWI:
-            printf("Sleep SWI Call ...\n");
             sleep_handler((unsigned long)regs[0]);
-            break;
-        // void time(__);
+            return 0;
+        
+        // unsigned long time();
         case TIME_SWI:
-            printf("Time SWI Call ...\n");
-            time_handler();
-            break;
+            return time_handler();
+        
         default:
             printf("Error in ref C_SWI_Handler: Invalid SWI number.");
             exit_handler(BAD_CODE); // never returns
     }
 
-    return count;
+    return -1;
 }
 
+/* C IRQ Handler, called when and IRQ is asserted */
 void C_IRQ_Handler() 
 {
+    /* Read Pending Interrupts Register */
     uint32_t icpr = reg_read(INT_ICPR_ADDR);
 
+    /* Check if the 26th (Interrupt Match 0) bit is set */
     if(bit_isset(icpr, INT_OSTMR_0))
         C_Timer_0_Handler();
 
@@ -275,21 +271,6 @@ int kmain(int argc, char** argv, uint32_t table)
     if (check_exception_vector(IRQ_VECT_ADDR) == FALSE)
         return BAD_CODE;
     wire_handler(IRQ_VECT_ADDR, &irq_handler, &old_irq_instr_1, &old_irq_instr_2);
-    
-   
-    /* Configure IRQ for timer */
-    uint32_t old_iclr = reg_read(INT_ICLR_ADDR);
-    reg_clear(INT_ICLR_ADDR, OSTMR_0_BIT);  /* Clear bit to generate irq's */
-    reg_set(INT_ICMR_ADDR, OSTMR_0_BIT);    /* Set bit to enable irq's */
-
-    /* Set up timer */    
-    reg_write(OSTMR_OSMR_ADDR(0), INTERVAL); /* Set interval */
-    reg_set(OSTMR_OIER_ADDR, OSTMR_OIER_E0); /* Enable match 0 */
-    reg_write(OSTMR_OSCR_ADDR, 0);           /* Reset counter */
-
-    printf("ICMR  = %x\n", (int)reg_read(INT_ICMR_ADDR));
-    printf("OSMR0 = %x\n", (int)reg_read(OSTMR_OSMR_ADDR(0)));
-    printf("OSCR  = %x\n", (int)reg_read(OSTMR_OSCR_ADDR));    
 
     // Copy argc and argv to user stack in the right order.
     int *spTop = ((int *) USER_STACK_TOP) - 1;
@@ -300,9 +281,18 @@ int kmain(int argc, char** argv, uint32_t table)
     }
     *spTop = argc;
 
+    /* Configure IRQ for timer */
+    uint32_t old_iclr = reg_read(INT_ICLR_ADDR);
+    reg_clear(INT_ICLR_ADDR, OSTMR_0_BIT);  /* Clear bit to generate irq's */
+    reg_write(INT_ICMR_ADDR, OSTMR_0_BIT);    /* Set bit to enable irq's */
+
+    /* Set up timer */    
+    reg_write(OSTMR_OSMR_ADDR(0), reg_read(OSTMR_OSCR_ADDR)+INTERVAL); /* Set interval */
+    reg_set(OSTMR_OIER_ADDR, OSTMR_OIER_E0); /* Enable match 0 */
+
     /** Jump to user program. **/
-    printf("Calling user progrm ...\n");
     global_time = 0;
+    printf("user_stack = %p\n", spTop);
     int usr_prog_status = user_setup(spTop);
 
 
@@ -312,7 +302,6 @@ int kmain(int argc, char** argv, uint32_t table)
     reg_write(INT_ICLR_ADDR, old_iclr);
 
     printf("global_time final = %ld\n", global_time);
-
     return usr_prog_status;
 }
 

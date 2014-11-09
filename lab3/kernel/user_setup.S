@@ -35,11 +35,6 @@ user_setup:
     bic     r2, r2, #0x080  @ Enable IRQs
     msr     cpsr, r2
 
-    @ reset timer counter
-    mov     r3, #0
-    ldr     r4, =OSTMR_OSCR_ADDR
-    str     r3, [r4]
-    
     @ set up user stack from spTop passed in from kernel.c
     mov     sp, r0
 

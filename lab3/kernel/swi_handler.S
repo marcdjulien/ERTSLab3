@@ -13,8 +13,15 @@
 
     .global swi_handler
 swi_handler:
+
+    @ Store reg contex and leave room for spsr    
     sub     sp, sp, #4
     stmfd   sp!, {r0-r12, lr}
+
+    @ enable interrupts after saving regs
+    mrs     r4, cpsr
+    bic     r4, r4, #0x080  @ Enable IRQs
+    msr     cpsr, r4
 
     @ get spsr into general purpose (gp) registers
     mrs     r2, spsr

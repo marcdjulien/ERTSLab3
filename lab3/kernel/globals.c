@@ -6,3 +6,4 @@
  */
 
 int user_setup_stack_ptr;
+volatile unsigned long global_time;

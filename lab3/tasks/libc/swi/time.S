@@ -12,7 +12,6 @@
 	.file "time.S"
 
 FUNC(time)
-	@ Add code here.  Put your name at the top.
 	swi TIME_SWI
 
     @ Store the absolute value of return value in errno

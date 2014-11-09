@@ -12,6 +12,7 @@
     .global irq_handler
 irq_handler:
     mov     sp, #0xA2000000
+    
     sub     sp, sp, #4
     stmfd   sp!, {r0-r12, lr}
 
