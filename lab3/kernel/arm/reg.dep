@@ -1,11 +1,11 @@
-/home/marc/18349/ERTSLab3/lab3/kernel/arm/reg.o:  \
- /home/marc/18349/ERTSLab3/lab3/kernel/arm/reg.c \
-  /home/marc/18349/ERTSLab3/lab3/kernel/include/types.h \
-  /home/marc/18349/ERTSLab3/lab3/kernel/include/arm/reg.h \
-  /home/marc/18349/ERTSLab3/lab3/kernel/include/inline.h
+/home/jeffrey/Documents/ERTSLab3/lab3/kernel/arm/reg.o:  \
+ /home/jeffrey/Documents/ERTSLab3/lab3/kernel/arm/reg.c \
+  /home/jeffrey/Documents/ERTSLab3/lab3/kernel/include/types.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/kernel/include/arm/reg.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/kernel/include/inline.h
 
-/home/marc/18349/ERTSLab3/lab3/kernel/include/types.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/kernel/include/types.h:
 
-/home/marc/18349/ERTSLab3/lab3/kernel/include/arm/reg.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/kernel/include/arm/reg.h:
 
-/home/marc/18349/ERTSLab3/lab3/kernel/include/inline.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/kernel/include/inline.h:

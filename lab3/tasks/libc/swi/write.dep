@@ -1,8 +1,8 @@
-/home/marc/18349/lab3/lab3/tasks/libc/swi/write.o:  \
- /home/marc/18349/lab3/lab3/tasks/libc/swi/write.S \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/asm.h \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/bits/swi.h
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/swi/write.o:  \
+ /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/swi/write.S \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/asm.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/swi.h
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/asm.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/asm.h:
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/bits/swi.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/swi.h:

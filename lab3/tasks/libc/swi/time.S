@@ -3,6 +3,7 @@
  * @brief time sycall wrapper
  *
  * @author Marc-Daniel Julien <mjulien@andrew.cmu.edu>
+ * @author Jeffery He <jmhe@andrew.cmu.edu>
  * @date 7 Nov 2014
  */
 
@@ -14,11 +15,4 @@
 FUNC(time)
 	swi TIME_SWI
 
-    @ Store the absolute value of return value in errno
-    neg r0, r0
-    ldr r1, =errno
-    str r0, [r1]
-
-    @ Store -1 in return value
-    mov r0, #-1
     mov pc, lr

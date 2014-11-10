@@ -5,7 +5,8 @@
   /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/sys/types.h \
   /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/types.h \
   /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdio.h \
-  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdarg.h
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdarg.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdlib.h
 
 /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/unistd.h:
 
@@ -18,3 +19,5 @@
 /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdio.h:
 
 /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdarg.h:
+
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdlib.h:

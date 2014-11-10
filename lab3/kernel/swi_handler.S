@@ -1,6 +1,9 @@
 @ swi_handler.S: SWI Handler
 @
 @ Author: Harry Q Bovik <hqbovik@andrew.cmu.edu>
+@ Modified by: 
+@ Marc-Daniel Julien <mjulien@andrew.cmu.edu>
+@ Jeffery He <jmhe@andrew.cmu.edu>
 @ Date:   Tue, 23 Oct 2007 11:20:33 -0400
 @
 @ Hint: To change the SWI handler in class, we need to accommodate a return
@@ -18,16 +21,20 @@ swi_handler:
     sub     sp, sp, #4
     stmfd   sp!, {r0-r12, lr}
 
-    @ enable interrupts after saving regs
-    mrs     r4, cpsr
-    bic     r4, r4, #0x080  @ Enable IRQs
-    msr     cpsr, r4
-
     @ get spsr into general purpose (gp) registers
     mrs     r2, spsr
 
     @ store spsr above gp registers
     str     r2, [sp, #14*4]
+
+    @ restore r8
+    ldr     r4, =r8_address
+    ldr     r8, [r4]
+
+    @ enable interrupts after saving regs
+    mrs     r4, cpsr
+    bic     r4, r4, #0x080  @ Enable IRQs
+    msr     cpsr, r4
 
     @ Set Param 1: extract SWI and get SWI no. by bit-masking
     ldr     r0, [lr, #-4]

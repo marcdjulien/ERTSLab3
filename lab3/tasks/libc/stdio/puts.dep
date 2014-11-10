@@ -1,23 +1,23 @@
-/home/marc/18349/lab3/lab3/tasks/libc/stdio/puts.o:  \
- /home/marc/18349/lab3/lab3/tasks/libc/stdio/puts.c \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/stdio.h \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/stdarg.h \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/sys/types.h \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/bits/types.h \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/string.h \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/unistd.h \
-  /home/marc/18349/lab3/lab3/tasks/libc/include/bits/fileno.h
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/stdio/puts.o:  \
+ /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/stdio/puts.c \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdio.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdarg.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/sys/types.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/types.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/string.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/unistd.h \
+  /home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/fileno.h
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/stdio.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdio.h:
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/stdarg.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/stdarg.h:
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/sys/types.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/sys/types.h:
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/bits/types.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/types.h:
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/string.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/string.h:
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/unistd.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/unistd.h:
 
-/home/marc/18349/lab3/lab3/tasks/libc/include/bits/fileno.h:
+/home/jeffrey/Documents/ERTSLab3/lab3/tasks/libc/include/bits/fileno.h:

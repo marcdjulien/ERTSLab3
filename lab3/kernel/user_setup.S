@@ -1,6 +1,9 @@
 @ user_setup.S: helper function written in asm called from kernel
 @
 @ Author: Anand Pattabiraman <apattabi@andrew.cmu.edu>
+@ Modified by: 
+@ Marc-Daniel Julien <mjulien@andrew.cmu.edu>
+@ Jeffery He <jmhe@andrew.cmu.edu>
 @ Date:   Wed, 29 Oct 2014
 @
 @ Hint:
@@ -27,6 +30,10 @@ user_setup:
     @ Save the stack pointer in a global variable for exit_handler.S.
     ldr     r2, =user_setup_stack_ptr
     str     sp, [r2] @ *user_setup_stack_ptr = sp
+
+    @ Save the address of r8/kernel global data structure thing 
+    ldr     r2, =r8_address
+    str     r8, [r2]
 
     @ change mode to USER
     mrs     r2, cpsr

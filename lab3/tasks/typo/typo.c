@@ -29,14 +29,12 @@ int main(int argc, char** argv)
     char input_buf[BUFFER_SIZE];
 
     const char prompt_message []= "Let's see how fast you can type. START NOW!.\n\0";
-
     while (1) {
     	/* Display the prompt, this is when the timer starts */
     	write(STDOUT_FILENO, (const void *) prompt_message, sizeof(prompt_message)-1);
 
     	//Start the timer
     	unsigned long startTime = time();
-
         /* Read a chunk of size BUFFER_SIZE from STDIN */
         read_count = read(STDIN_FILENO, input_buf, BUFFER_SIZE);
 
@@ -48,29 +46,15 @@ int main(int argc, char** argv)
 
         // No input -> just carriage return character, terminate with 0 (success).
         if(read_count == 1) { return 0; }
-
-        // If error on write, exit with status 1
-        // Echo's the user input
-        //if (write(STDOUT_FILENO, input_buf, read_count) < 0) {
+        
+        // Displays the time it took to type the message
+        //if (write(STDOUT_FILENO, (const void *)timeElapsedStr, sizeof(timeElapsedStr)-1 ) < 0) {
         //    return 1;
         //}
 
-        //int aInt = 368;
-        //char str[15];
-        //sprintf(str, "%d", aInt);
-
-        char timeElapsedStr[4];
-        sprintf(timeElapsedStr, "%ld", timeElapsed);
+        printf("The time it took you to write your message was %ld milliseconds", (unsigned long)timeElapsed);
+        putchar('\n');
         
-        // Displays the time it took to type the message
-        if (write(STDOUT_FILENO, (const void *)timeElapsedStr, sizeof(timeElapsedStr)-1 ) < 0) {
-            return 1;
-        }
-
-        //i get a hardware error without this return 1 below? really weird. 
-        return 1;
-        //printf("The time it took you to write your message was %ld seconds\n", (unsigned long)timeElapsed);
-
     }
 	return 0;
 }

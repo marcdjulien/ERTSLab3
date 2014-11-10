@@ -1,6 +1,7 @@
 @ irq_handler.S: irq Handler
 @
-@ Author: Marc-Daniel Julien <mjulien@andrew.cmu.edu>
+@ author Marc-Daniel Julien <mjulien@andrew.cmu.edu>
+@ author Jeffery He <jmhe@andrew.cmu.edu>
 @ Date:   Tue, 6 Nov 2014 11:20:33 -0400
 
 
@@ -21,6 +22,10 @@ irq_handler:
 
     @ store spsr above gp registers
     str     r2, [sp, #14*4]
+
+    @ restore r8
+    ldr     r4, =r8_address
+    ldr     r8, [r4]
 
     @ go to handler
     bl      C_IRQ_Handler
