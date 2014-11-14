@@ -28,6 +28,10 @@ int row = 1;
 int col = 1;
 
 int movePiece(char direction){
+    putchar('\n');putchar('\n');putchar('\n');putchar('\n');putchar('\n');
+    putchar('\n');putchar('\n');putchar('\n');putchar('\n');putchar('\n');
+    putchar('\n');putchar('\n');putchar('\n');putchar('\n');putchar('\n');
+    putchar('\n');putchar('\n');putchar('\n');putchar('\n');putchar('\n');
     write(STDOUT_FILENO, (const void *) topLine, 21);
     write(STDOUT_FILENO, (const void *) middleline1, 21);
     write(STDOUT_FILENO, (const void *) middleline2, 21);
@@ -210,7 +214,7 @@ int main(int argc, char** argv)
 
     putchar('\n');
     putchar('\n');
-    printf("Press 'i' followed by 'Enter' for instructions, otherwise type anything else to start");
+    printf("Press 'i' followed by 'Enter' for instructions, otherwise just hit 'Enter' to start");
     putchar('\n');
 
     read(STDIN_FILENO, start_buf, BUFFER_SIZE);
@@ -227,11 +231,11 @@ int main(int argc, char** argv)
         printf("Use standard gaming WASD keys to move up left down right respectively");
         putchar('\n');
         sleep(3100);
-        printf("Be sure to hit 'Enter' after you type in your key");
+        printf("*****Be sure to hit 'Enter' after you type in your key to move*****");
         putchar('\n');
         sleep(2100);
         putchar('\n');
-        printf("Press any key followed by 'Enter' when you're ready");
+        printf("Press 'Enter' when you're ready");
         putchar('\n');
         read(STDIN_FILENO, start_buf, BUFFER_SIZE);
     }
