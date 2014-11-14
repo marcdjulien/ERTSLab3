@@ -203,44 +203,53 @@ int main(int argc, char** argv)
 {
 
 	ssize_t read_count = 2;
+    char start_buf[BUFFER_SIZE];
     char input_buf[BUFFER_SIZE];
-
     char direction = 'a'; //w up, d right, s down, a left
     int stuck = 0;
+
     putchar('\n');
     putchar('\n');
-    printf("You are the @ character...");
+    printf("Press 'i' followed by 'Enter' for instructions, otherwise type anything else to start");
     putchar('\n');
-    putchar('\n');
-    sleep(2100);
-    printf("You're sliding on ice, but you want to go grab the money.");
-    putchar('\n');
-    putchar('\n');
-    sleep(3100);
-    printf("Use standard gaming WASD keys to move up left down right respectively");
-    putchar('\n');
-    putchar('\n');
-    sleep(3100);
+
+    read(STDIN_FILENO, start_buf, BUFFER_SIZE);
+    if(start_buf[0] == 'i'){
+        printf("You are the @ character...");
+        putchar('\n');
+        sleep(2100);
+        printf("You're sliding on ice, but walls and the 'o' blocks will stop you");
+        putchar('\n');
+        sleep(3100);
+        printf("Your objective is to grab the money.");
+        putchar('\n');
+        sleep(2100);
+        printf("Use standard gaming WASD keys to move up left down right respectively");
+        putchar('\n');
+        sleep(3100);
+        printf("Be sure to hit 'Enter' after you type in your key");
+        putchar('\n');
+        sleep(2100);
+        putchar('\n');
+        printf("Press any key followed by 'Enter' when you're ready");
+        putchar('\n');
+        read(STDIN_FILENO, start_buf, BUFFER_SIZE);
+    }
+    
     printf("Your game starts in 2 seconds");
     putchar('\n');
     putchar('\n');
-    sleep(2500);
+    sleep(2000);
     startTime = time();
     while (1) {
         
-
-        sleep(150);
+        sleep(200);
         if (stuck){
             read_count = read(STDIN_FILENO, input_buf, BUFFER_SIZE);
             direction = input_buf[0];
         }
         stuck = movePiece(direction);
 
-        // Error, return 1 -> exit with status 1
-        if(read_count <= 0) { return 1; }
-
-        // No input -> just carriage return character, terminate with 0 (success).
-        if(read_count == 1) { return 0; }
         
     }
 	return 0;
