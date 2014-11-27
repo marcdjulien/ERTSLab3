@@ -205,10 +205,26 @@ void sleep_handler(unsigned long millisDelay)
 
 int task_create_handler(task_t *tasks, size_t n)
 {
-	tasks = tasks;
-	n = n;
+	if(n > 64)
+		return -EINVAL;
+
 	printf("Creating %d tasks\n", (int)n);
-	return 0;
+	/* checks if tasks point to valid regin of code */
+	/* check if tasks are schedulable */
+	/* sorts tasks by priority RMA */
+	
+	/* Allocate */
+	allocate_tasks(tasks, n);
+
+	/* Branch to first task */
+	dispatch_nosave();
+
+	return -ESCHED;
+}
+
+int event_wait_handler(unsigned dev)
+{
+	return -1;
 }
 
 /* Called when OSCR matches OSMR_0 (ie, every 10ms) */
@@ -257,6 +273,9 @@ int C_SWI_Handler(int swiNum, int *regs)
         case CREATE_SWI:
         	return task_create_handler((task_t *)regs[0], (size_t)regs[1]);
         
+        case EVENT_WAIT:
+        	return event_wait_handler((unsigned)reg[0]);
+
         default:
             printf("Error in ref C_SWI_Handler: Invalid SWI number.");
             exit_handler(BAD_CODE); // never returns

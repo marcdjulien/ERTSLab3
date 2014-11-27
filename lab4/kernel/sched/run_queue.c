@@ -12,10 +12,11 @@
 #include <kernel.h>
 #include <sched.h>
 #include "sched_i.h"
+#include <exports.h>
 
 
-
-static tcb_t* run_list[OS_MAX_TASKS]  __attribute__((unused));
+/* Unused */
+static tcb_t *run_list[OS_MAX_TASKS]  __attribute__((unused));
 
 /* A high bit in this bitmap means that the task whose priority is
  * equal to the bit number of the high bit is runnable.
@@ -58,7 +59,9 @@ static uint8_t prio_unmap_table[]  __attribute__((unused)) =
  */
 void runqueue_init(void)
 {
-	
+	int i;
+	for(i = 0; i < OS_MAX_TASKS; i++)
+		run_list[i] = NULL;
 }
 
 /**
@@ -71,7 +74,16 @@ void runqueue_init(void)
  */
 void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute__((unused)))
 {
-	
+	if(run_list[prio] == NULL)
+	{
+		run_list[prio] = tcb;
+		int y = (prio >> 3);
+		int x = (prio & 0x07);
+		group_run_bits |= 1 << y;
+		run_bits[y] |= 1 << x;
+	}
+	else
+		printf("run_list not empty\n");
 }
 
 
@@ -84,7 +96,9 @@ void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute
  */
 tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
 {
-	return (tcb_t *)1; // fix this; dummy return to prevent warning messages	
+	tcb_t *task = run_list[prio];
+	run_list[prio] = NULL;
+	return task; // fix this; dummy return to prevent warning messages	
 }
 
 /**
@@ -93,5 +107,7 @@ tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
  */
 uint8_t highest_prio(void)
 {
-	return 1; // fix this; dummy return to prevent warning messages	
+	int y = prio_unmap_table[group_run_bits];
+	int x = prio_unmap_table[run_bits[y]];
+	return (y << 3) + x;
 }

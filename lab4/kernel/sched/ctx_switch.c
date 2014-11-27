@@ -28,7 +28,7 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
-	
+	cur_tcb = idle;
 }
 
 
@@ -42,7 +42,7 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
-	
+	/* Find highest task tcb in system_tcb */
 }
 
 /**
@@ -53,7 +53,7 @@ void dispatch_save(void)
  */
 void dispatch_nosave(void)
 {
-
+	ctx_switch_half(&(cur_tcb->context));
 }
 
 

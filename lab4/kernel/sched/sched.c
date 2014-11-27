@@ -20,6 +20,7 @@
 
 tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 
+/* Unused */
 void sched_init(task_t* main_task  __attribute__((unused)))
 {
 	
@@ -50,6 +51,44 @@ static void __attribute__((unused)) idle(void)
  */
 void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
-	
+	/* Initialize run queue */
+	runqueue_init();
+
+	/* Add tasks to queue */
+	size_t i;
+	for(i = 0; i < num_tasks; i++)
+	{
+		tcb_t *cur_tcb = (tcb_t *)(&(system_tcb[i]));
+		task_t *cur_task = tasks[i];
+		
+		cur_tcb->native_prio = i; //??
+		cur_tcb->cur_prio = i;    //??
+		
+		cur_tcb->context.r4 = (uint32_t)cur_task->lambda;
+		cur_tcb->context.r5 = (uint32_t)cur_task->data;
+		cur_tcb->context.r6 = (uint32_t)cur_task->stack_pos;
+		cur_tcb->context.r7 = 0;
+		cur_tcb->context.r8 = 0;
+		cur_tcb->context.r9 = 0;
+		cur_tcb->context.r10 = 0;
+		cur_tcb->context.r11 = 0;
+		cur_tcb->context.lr = 0;
+		cur_tcb->context.sp = 0;
+
+		cur_tcb->holds_lock = FALSE;
+		cur_tcb->sleep_queue = NULL;
+
+		runqueue_add(cur_tcb, cur_tcb->cur_prio);
+
+	}
+
+	/* Create and add idle task */
+	tcb_t *idle_tcb = (tcb_t *)(&(system_tcb[num_tasks]));
+	idle_tcb->context.r4 = (uint32_t)idle;
+	idle_tcb->native_prio = OS_MAX_TASKS-1;
+	idle_tcb->cur_prio = OS_MAX_TASKS-1;
+	runqueue_add(idle_tcb, idle_tcb->cur_prio);
+	dispatch_init(idle_tcb);
+
 }
 

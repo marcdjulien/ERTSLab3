@@ -45,3 +45,8 @@ FUNC(ctx_switch_full)
 
 /*add your code to perform a half context switch */	
 FUNC(ctx_switch_half)
+	ldr r4, [r0]
+	ldr r5, [r0, #4]
+	ldr r6, [r0, #8]
+	b launch_task
+
