@@ -1,0 +1,14 @@
+/home/marc/18349/ERTSLab3/lab4/kernel/sched/ub_test.o:  \
+ /home/marc/18349/ERTSLab3/lab4/kernel/sched/ub_test.c \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/sched.h \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/task.h \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/types.h \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/config.h
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/sched.h:
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/task.h:
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/config.h:

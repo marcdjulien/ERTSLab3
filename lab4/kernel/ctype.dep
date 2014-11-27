@@ -1,0 +1,8 @@
+/home/marc/18349/ERTSLab3/lab4/kernel/ctype.o:  \
+ /home/marc/18349/ERTSLab3/lab4/kernel/ctype.c \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/ctype.h \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/inline.h
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/ctype.h:
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/inline.h:

@@ -1,0 +1,8 @@
+/home/marc/18349/ERTSLab3/lab4/kernel/math.o:  \
+ /home/marc/18349/ERTSLab3/lab4/kernel/math.c \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/types.h \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/math.h
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/math.h:

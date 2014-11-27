@@ -1,0 +1,11 @@
+/home/marc/18349/ERTSLab3/lab4/kernel/arm/reg.o:  \
+ /home/marc/18349/ERTSLab3/lab4/kernel/arm/reg.c \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/types.h \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/arm/reg.h \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/inline.h
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/arm/reg.h:
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/inline.h:

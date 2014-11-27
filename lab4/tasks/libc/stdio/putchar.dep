@@ -1,0 +1,20 @@
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/stdio/putchar.o:  \
+ /home/marc/18349/ERTSLab3/lab4/tasks/libc/stdio/putchar.c \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdio.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdarg.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/unistd.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/fileno.h
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdio.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdarg.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/unistd.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/fileno.h:

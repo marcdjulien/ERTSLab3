@@ -1,0 +1,8 @@
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/stdlib/ctype.o:  \
+ /home/marc/18349/ERTSLab3/lab4/tasks/libc/stdlib/ctype.c \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/ctype.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/inline.h
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/ctype.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/inline.h:

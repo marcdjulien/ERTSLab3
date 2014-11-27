@@ -1,0 +1,5 @@
+/home/marc/18349/ERTSLab3/lab4/kernel/start.o:  \
+ /home/marc/18349/ERTSLab3/lab4/kernel/start.S \
+  /home/marc/18349/ERTSLab3/lab4/kernel/include/asm.h
+
+/home/marc/18349/ERTSLab3/lab4/kernel/include/asm.h:

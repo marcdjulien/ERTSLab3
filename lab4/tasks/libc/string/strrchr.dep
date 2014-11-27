@@ -1,0 +1,11 @@
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/string/strrchr.o:  \
+ /home/marc/18349/ERTSLab3/lab4/tasks/libc/string/strrchr.c \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/string.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/string.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h:

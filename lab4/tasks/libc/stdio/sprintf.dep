@@ -1,0 +1,17 @@
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/stdio/sprintf.o:  \
+ /home/marc/18349/ERTSLab3/lab4/tasks/libc/stdio/sprintf.c \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdio.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdarg.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/stdio/doprnt.h
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdio.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdarg.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/stdio/doprnt.h:

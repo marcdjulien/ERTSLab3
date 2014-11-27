@@ -1,0 +1,20 @@
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/stdlib/strtoul.o:  \
+ /home/marc/18349/ERTSLab3/lab4/tasks/libc/stdlib/strtoul.c \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdlib.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/ctype.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/inline.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/string.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h \
+  /home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/stdlib.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/ctype.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/inline.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/string.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/sys/types.h:
+
+/home/marc/18349/ERTSLab3/lab4/tasks/libc/include/bits/types.h:
