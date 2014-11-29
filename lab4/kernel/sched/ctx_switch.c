@@ -28,10 +28,10 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  * Set the initialization thread's priority to IDLE so that anything
  * will preempt it when dispatching the first task.
  */
+/* Marc: Unused */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
-	printf("Dispatch init ...\n");
-	cur_tcb = idle;
+	
 }
 
 
@@ -45,18 +45,26 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
-	//printf("Dispatch save4 ...\n");
 	tcb_t *dest, *temp;
 	temp = cur_tcb;
 	uint8_t hp = highest_prio();
+
+	/* If the idle task is he only next high prio task
+	   that means we are already running idle task */
 	if(hp == IDLE_PRIO)
 		dest = cur_tcb;
 	else
 		dest = runqueue_remove(hp);
 
+	/* Set cur_tcb to the task that we are about to run */
 	cur_tcb = dest;
+
+	/* Set the cur_kstack var of the task that we are about to run */
 	cur_kstack = (int)dest->kstack_high;
+	
+	/* Add the task that we just switched from back to the queue */
 	runqueue_add(temp, temp->cur_prio);
+
 	ctx_switch_full(&(dest->context), &(temp->context));
 }
 
@@ -68,13 +76,17 @@ void dispatch_save(void)
  */
 void dispatch_nosave(void)
 {
-	//printf("Dispatch nosave ...\n");
 	/*
 	   This executes the first task
-	   This ends up being the high prio task
+	   This ends up being the initial high prio task
 	 */
+
+	/* Set cur_tcb to the task that we are about to run */
 	cur_tcb = runqueue_remove(highest_prio());
+
+	/* Set the cur_kstack var of the task that we are about to run */
 	cur_kstack = (int)cur_tcb->kstack_high;
+
 	ctx_switch_half(&(cur_tcb->context));
 }
 
@@ -87,19 +99,23 @@ void dispatch_nosave(void)
  */
 void dispatch_sleep(void)
 {
-	//printf("Dispatch sleep ...\n");
 	tcb_t *dest, *temp;
 	temp = cur_tcb;
-	uint8_t cp = get_cur_prio(); /* of task that was just put to sleep */
-	uint8_t hp = highest_prio();
+	uint8_t cp = get_cur_prio(); /* i.e task that was just put to sleep */
+	uint8_t hp = highest_prio(); /* next task to run */
 
+	/* Run idle task if there are no other */
 	if(cp == hp)
 		dest = runqueue_remove(IDLE_PRIO);
 	else
 		dest = runqueue_remove(hp);
-	/* Todo: save temp/current task */
+
+	/* Set cur_tcb to the task that we are about to run */
 	cur_tcb = dest;
+	
+	/* Set the cur_kstack var of the task that we are about to run */
 	cur_kstack = (int)dest->kstack_high;
+	
 	ctx_switch_full(&(dest->context), &(temp->context));
 }
 

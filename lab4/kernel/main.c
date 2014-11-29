@@ -260,7 +260,7 @@ int task_create_handler(task_t *tasks, size_t n)
 	/* Allocate */
 	allocate_tasks(sorted_tasks, n);
 
-	/* start running the first task */
+	/* Start running the first high prio task */
 	dispatch_nosave();
 
 	return -ESCHED;

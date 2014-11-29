@@ -15,7 +15,7 @@
 #include <exports.h>
 
 
-/* Unused */
+/* Marc: Unused */
 static tcb_t *run_list[OS_MAX_TASKS]  __attribute__((unused));
 
 /* A high bit in this bitmap means that the task whose priority is
@@ -59,7 +59,7 @@ static uint8_t prio_unmap_table[]  __attribute__((unused)) =
  */
 void runqueue_init(void)
 {
-	//printf("Initializing Q ...\n");
+	/* Set all queues to empty/NULL */
 	int i;
 	for(i = 0; i < OS_MAX_TASKS; i++)
 		run_list[i] = NULL;
@@ -75,17 +75,18 @@ void runqueue_init(void)
  */
 void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute__((unused)))
 {
-	//printf("Adding to Q%d ...\n",prio);
+	/* Only add if the queue is empty */
 	if(run_list[prio] == NULL)
 	{
 		run_list[prio] = tcb;
+		/* Set group,run bits accordingly */
 		int y = (prio >> 3);
 		int x = (prio & 0x07);
 		group_run_bits |= 1 << y;
 		run_bits[y] |= 1 << x;
 	}
 	else
-		printf("run_list not empty\n");
+		printf("Error: Queue is not empty\n");
 }
 
 
@@ -98,15 +99,15 @@ void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute
  */
 tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
 {
-	//printf("Removing from Q ...\n");
 	
-	/* Reset bits */
+	/* Reset bits accordingly*/
 	int y = (prio >> 3);
 	int x = (prio & 0x07);
-	run_bits[y] ^= 1 << x; // Toggle run bit
-	if(run_bits[y] == 0) // No tasks left in this group
+	run_bits[y] ^= 1 << x; /* Toggle run bit */
+	if(run_bits[y] == 0)   /* No tasks left in this group */
 		group_run_bits ^= 1 << y; //Toggle group bit
 
+	/* Remove tcb from queue */
 	tcb_t *task = run_list[prio];
 	run_list[prio] = NULL;
 
@@ -119,10 +120,8 @@ tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
  */
 uint8_t highest_prio(void)
 {
-	//printf("Getting highest priority\n");
 	int y = prio_unmap_table[group_run_bits];
 	int x = prio_unmap_table[run_bits[y]];
 	int p = (y << 3) + x;
-	//printf("  -> %d\n", p);
 	return p;
 }

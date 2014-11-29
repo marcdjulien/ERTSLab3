@@ -21,7 +21,7 @@
 
 tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 
-/* Unused */
+/* Marc: Unused */
 void sched_init(task_t* main_task  __attribute__((unused)))
 {
 	
@@ -52,7 +52,6 @@ static void __attribute__((unused)) idle(void)
  */
 void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
-	printf("Allocating tasks ...\n");
 	/* Initialize run queue */
 	runqueue_init();
 
@@ -60,27 +59,33 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 	size_t i;
 	for(i = 0; i < num_tasks; i++)
 	{
+		/* Get TCB Struct*/
 		tcb_t *cur_tcb = (tcb_t *)(&(system_tcb[i]));
+		/* Get Task Struct */
 		task_t *cur_task = tasks[i];
 		
+		/* Set priorities (already in order) */
 		cur_tcb->native_prio = i; 
 		cur_tcb->cur_prio = i;    
 		
+		/* Initialize r4,r5,r6 for launch_task */
 		cur_tcb->context.r4 = (uint32_t)cur_task->lambda;
 		cur_tcb->context.r5 = (uint32_t)cur_task->data;
 		cur_tcb->context.r6 = (uint32_t)cur_task->stack_pos;
+		/* Clear other regs */
 		cur_tcb->context.r7 = 0;
 		cur_tcb->context.r8 = 0;
 		cur_tcb->context.r9 = 0;
 		cur_tcb->context.r10 = 0;
 		cur_tcb->context.r11 = 0;
+		/* Should run launch_task initially */
 		cur_tcb->context.lr = (void *)launch_task;
 		cur_tcb->context.sp = cur_tcb->kstack_high;
 
 		cur_tcb->holds_lock = FALSE;
 		cur_tcb->sleep_queue = NULL;
 
-
+		/* Set task to be runnable by adding to run queue */
 		runqueue_add(cur_tcb, cur_tcb->cur_prio);
 
 	}
@@ -88,21 +93,11 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 	/* Create and add idle task */
 	tcb_t *idle_tcb = (tcb_t *)(&(system_tcb[num_tasks]));
 	idle_tcb->context.r4 = (uint32_t)idle;
-	idle_tcb->context.r5 = (uint32_t)0x42;
-	idle_tcb->context.r6 = (uint32_t)0xA2FFF000; //dummy stack
-	idle_tcb->context.r7 = 0;
-	idle_tcb->context.r8 = 0;
-	idle_tcb->context.r9 = 0;
-	idle_tcb->context.r10 = 0;
-	idle_tcb->context.r11 = 0;	
 	idle_tcb->context.lr = (void *)launch_task;
 	idle_tcb->context.sp = (void *)idle_tcb->kstack_high;
 	idle_tcb->native_prio = IDLE_PRIO;
 	idle_tcb->cur_prio = IDLE_PRIO;
 	runqueue_add(idle_tcb, idle_tcb->cur_prio);
-
-	/* Initializing the high prio task to run first */
-	//dispatch_init(&(system_tcb[0]));
 
 }
 

@@ -57,6 +57,7 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 
 	mutex_t *m = &(gtMutex[mutex]);
 	tcb_t *cur_tcb = get_cur_tcb();
+	
 	/* Mutex not created */
 	if(!m->bAvailable)
 		return -EINVAL;

@@ -16,11 +16,13 @@
 
     .global swi_handler
 swi_handler:
-    @ Switch to tasks kstack
+
+    @ Switch to this tasks kstack
     ldr ip, =cur_kstack
     ldr sp, [ip]
 
     @ save user stuff
+    @ '^' means user mode registers
     mrs   ip, spsr
     stmfd sp, {ip, sp, lr}^
     sub   sp, sp, #12
@@ -65,7 +67,7 @@ swi_handler:
     @ remove space used to store spsr
     add     sp, sp, #4
 
-    @ restore user sp
+    @ restore user mode stuff
     ldmfd sp, {ip, sp, lr}^
     msr   spsr, ip
     add   sp, sp, #12
