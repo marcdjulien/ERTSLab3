@@ -16,6 +16,7 @@
 #include <types.h>
 
 /* Added by Marc */
+#include <lock.h>
 #include <exports.h>
 #include <arm/psr.h>
 #include <arm/exception.h>
@@ -202,21 +203,33 @@ void sleep_handler(unsigned long millisDelay)
     unsigned long currentTime = global_time;
     while((currentTime + millisDelay) >= global_time);    
 }
-
+int task_compare(const void *a, const void *b)
+{
+	task_t *ta = (task_t *)a;
+	task_t *tb = (task_t *)b;
+	if (ta->T > tb->T) return 1;
+	else if (ta->T < tb->T) return -1;
+	else return 0;
+}
 int task_create_handler(task_t *tasks, size_t n)
 {
+	printf("Creating %d tasks\n", (int)n);
 	if(n > 64)
 		return -EINVAL;
 
-	printf("Creating %d tasks\n", (int)n);
+	task_t *sorted_tasks[n];
+	size_t i;
+	for(i = 0; i < n; i++)
+		sorted_tasks[i] = &(tasks[i]);
+	//qsort(sorted_tasks, n, sizeof(task_t *), task_compare);
 	/* checks if tasks point to valid regin of code */
 	/* check if tasks are schedulable */
 	/* sorts tasks by priority RMA */
 	
 	/* Allocate */
-	allocate_tasks(tasks, n);
+	allocate_tasks(sorted_tasks, n);
 
-	/* Branch to first task */
+	/* start running the first task */
 	dispatch_nosave();
 
 	return -ESCHED;
@@ -224,7 +237,14 @@ int task_create_handler(task_t *tasks, size_t n)
 
 int event_wait_handler(unsigned dev)
 {
-	return -1;
+    disable_interrupts();
+    if(dev < 4)
+	{
+        dev_wait(dev);
+        return 0;
+    }
+    else
+        return -EINVAL;
 }
 
 /* Called when OSCR matches OSMR_0 (ie, every 10ms) */
@@ -239,6 +259,9 @@ void C_Timer_0_Handler()
     
     /* Increment global time */
     global_time += 10;
+
+    /* Handle scheduling tasks */
+    dev_update(global_time);
 }
 
 /* C_SWI_Handler uses SWI number to call the appropriate function. */
@@ -274,7 +297,16 @@ int C_SWI_Handler(int swiNum, int *regs)
         	return task_create_handler((task_t *)regs[0], (size_t)regs[1]);
         
         case EVENT_WAIT:
-        	return event_wait_handler((unsigned)reg[0]);
+            return event_wait_handler((unsigned)regs[0]);
+
+        case MUTEX_CREATE:
+            return mutex_create();
+
+        case MUTEX_LOCK:
+            return mutex_lock((int)regs[0]);
+
+        case MUTEX_UNLOCK:
+            return mutex_unlock((int)regs[0]);
 
         default:
             printf("Error in ref C_SWI_Handler: Invalid SWI number.");
@@ -334,6 +366,8 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 
 
     /** Jump to user program. **/
+    dev_init();
+    mutex_init();
     global_time = 0;
     printf("Starting User Mode with user_stack = %p\n", spTop);
     user_setup(spTop);

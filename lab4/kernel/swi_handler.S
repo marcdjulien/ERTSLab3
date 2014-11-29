@@ -16,8 +16,16 @@
 
     .global swi_handler
 swi_handler:
+    @ Switch to tasks kstack
+    ldr ip, =cur_kstack
+    ldr sp, [ip]
 
-    @ Store reg contex and leave room for spsr    
+    @ save user stuff
+    mrs   ip, spsr
+    stmfd sp, {ip, sp, lr}^
+    sub   sp, sp, #12
+
+    @ Store reg contex and leave room for spsr 
     sub     sp, sp, #4
     stmfd   sp!, {r0-r12, lr}
 
@@ -28,8 +36,8 @@ swi_handler:
     str     r2, [sp, #14*4]
 
     @ restore r8
-    ldr     r4, =r8_address
-    ldr     r8, [r4]
+    ldr     ip, =global_data
+    ldr     r8, [ip]
 
     @ enable interrupts after saving regs
     mrs     r4, cpsr
@@ -56,4 +64,10 @@ swi_handler:
 
     @ remove space used to store spsr
     add     sp, sp, #4
+
+    @ restore user sp
+    ldmfd sp, {ip, sp, lr}^
+    msr   spsr, ip
+    add   sp, sp, #12
+
     movs    pc, lr

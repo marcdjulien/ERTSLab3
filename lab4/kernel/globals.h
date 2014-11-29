@@ -14,4 +14,6 @@
 extern int user_setup_stack_ptr;
 extern volatile unsigned long global_time;
 extern int r8_address;
+extern int cur_kstack;
+extern int cur_ustack;
 #endif /* GLOBALS_H */

@@ -72,7 +72,7 @@ FUNC(irq_handler)
 /*
  * We have exactly one IRQ save area.  This is shared across all tasks.  When an
  * IRQ is taken, this region is used as a temporary area to shuffle values across
- * the the SVC stack.  We don't want a full block IRQ stack, let alone an IRQ stack
+ * the the SVC stack.  We dont want a full block IRQ stack, let alone an IRQ stack
  * per task.
  */
 	.bss

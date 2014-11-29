@@ -59,6 +59,7 @@ static uint8_t prio_unmap_table[]  __attribute__((unused)) =
  */
 void runqueue_init(void)
 {
+	//printf("Initializing Q ...\n");
 	int i;
 	for(i = 0; i < OS_MAX_TASKS; i++)
 		run_list[i] = NULL;
@@ -74,6 +75,7 @@ void runqueue_init(void)
  */
 void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute__((unused)))
 {
+	//printf("Adding to Q%d ...\n",prio);
 	if(run_list[prio] == NULL)
 	{
 		run_list[prio] = tcb;
@@ -96,9 +98,19 @@ void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute
  */
 tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
 {
+	//printf("Removing from Q ...\n");
+	
+	/* Reset bits */
+	int y = (prio >> 3);
+	int x = (prio & 0x07);
+	run_bits[y] ^= 1 << x; // Toggle run bit
+	if(run_bits[y] == 0) // No tasks left in this group
+		group_run_bits ^= 1 << y; //Toggle group bit
+
 	tcb_t *task = run_list[prio];
 	run_list[prio] = NULL;
-	return task; // fix this; dummy return to prevent warning messages	
+
+	return task;	
 }
 
 /**
@@ -107,7 +119,10 @@ tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
  */
 uint8_t highest_prio(void)
 {
+	//printf("Getting highest priority\n");
 	int y = prio_unmap_table[group_run_bits];
 	int x = prio_unmap_table[run_bits[y]];
-	return (y << 3) + x;
+	int p = (y << 3) + x;
+	//printf("  -> %d\n", p);
+	return p;
 }

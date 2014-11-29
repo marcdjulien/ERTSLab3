@@ -11,3 +11,5 @@
 int user_setup_stack_ptr;
 volatile unsigned long global_time;
 int r8_address;
+int cur_kstack = 0xA2FF0000;
+int cur_ustack;

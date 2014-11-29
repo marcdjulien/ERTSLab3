@@ -37,7 +37,7 @@ struct dev
 typedef struct dev dev_t;
 
 /* devices will be periodically signaled at the following frequencies */
-const unsigned long dev_freq[NUM_DEVICES] = {100, 200, 500, 50};
+const unsigned long dev_freq[NUM_DEVICES] = {1000, 2000, 50, 500};//{100, 200, 500, 50};
 static dev_t devices[NUM_DEVICES];
 
 /**
@@ -45,8 +45,12 @@ static dev_t devices[NUM_DEVICES];
  */
 void dev_init(void)
 {
-   /* the following line is to get rid of the warning and should not be needed */	
-   devices[0]=devices[0];
+   int i;
+   for(i = 0; i < NUM_DEVICES; i++)
+	{
+		devices[i].next_match = dev_freq[i];
+		devices[i].sleep_queue = NULL;
+	}
 }
 
 
@@ -58,7 +62,8 @@ void dev_init(void)
  */
 void dev_wait(unsigned int dev __attribute__((unused)))
 {
-	
+	devices[dev].sleep_queue = get_cur_tcb();
+	dispatch_sleep();
 }
 
 
@@ -71,6 +76,28 @@ void dev_wait(unsigned int dev __attribute__((unused)))
  */
 void dev_update(unsigned long millis __attribute__((unused)))
 {
-	
+	disable_interrupts();
+	int i;
+	int call_dispatch = 0;
+	for(i = 0; i < NUM_DEVICES; i++)
+	{
+		/* Match detected */
+		if(millis > devices[i].next_match)
+		{
+
+			/* Add all (1) tasks to run queue */
+			tcb_t *tcb = devices[i].sleep_queue;
+			if(tcb != NULL)
+			{
+				call_dispatch |= 1;
+				runqueue_add(tcb, tcb->cur_prio);
+			}
+			devices[i].next_match += dev_freq[i];
+		}
+	}
+
+	if(call_dispatch)
+		dispatch_save();
+
 }
 

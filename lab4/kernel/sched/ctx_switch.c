@@ -18,6 +18,8 @@
 #include <exports.h>
 #endif
 
+extern int cur_kstack;
+
 static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
 
 /**
@@ -28,6 +30,7 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
+	printf("Dispatch init ...\n");
 	cur_tcb = idle;
 }
 
@@ -42,7 +45,19 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
-	/* Find highest task tcb in system_tcb */
+	//printf("Dispatch save4 ...\n");
+	tcb_t *dest, *temp;
+	temp = cur_tcb;
+	uint8_t hp = highest_prio();
+	if(hp == IDLE_PRIO)
+		dest = cur_tcb;
+	else
+		dest = runqueue_remove(hp);
+
+	cur_tcb = dest;
+	cur_kstack = (int)dest->kstack_high;
+	runqueue_add(temp, temp->cur_prio);
+	ctx_switch_full(&(dest->context), &(temp->context));
 }
 
 /**
@@ -53,6 +68,13 @@ void dispatch_save(void)
  */
 void dispatch_nosave(void)
 {
+	//printf("Dispatch nosave ...\n");
+	/*
+	   This executes the first task
+	   This ends up being the high prio task
+	 */
+	cur_tcb = runqueue_remove(highest_prio());
+	cur_kstack = (int)cur_tcb->kstack_high;
 	ctx_switch_half(&(cur_tcb->context));
 }
 
@@ -65,7 +87,20 @@ void dispatch_nosave(void)
  */
 void dispatch_sleep(void)
 {
-	
+	//printf("Dispatch sleep ...\n");
+	tcb_t *dest, *temp;
+	temp = cur_tcb;
+	uint8_t cp = get_cur_prio(); /* of task that was just put to sleep */
+	uint8_t hp = highest_prio();
+
+	if(cp == hp)
+		dest = runqueue_remove(IDLE_PRIO);
+	else
+		dest = runqueue_remove(hp);
+	/* Todo: save temp/current task */
+	cur_tcb = dest;
+	cur_kstack = (int)dest->kstack_high;
+	ctx_switch_full(&(dest->context), &(temp->context));
 }
 
 /**
@@ -73,7 +108,7 @@ void dispatch_sleep(void)
  */
 uint8_t get_cur_prio(void)
 {
-	return 1; //fix this; dummy return to prevent compiler warning
+	return cur_tcb->cur_prio; 
 }
 
 /**
@@ -81,5 +116,5 @@ uint8_t get_cur_prio(void)
  */
 tcb_t* get_cur_tcb(void)
 {
-	return (tcb_t *) 0; //fix this; dummy return to prevent compiler warning
+	return cur_tcb;
 }
