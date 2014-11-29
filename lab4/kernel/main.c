@@ -203,28 +203,59 @@ void sleep_handler(unsigned long millisDelay)
     unsigned long currentTime = global_time;
     while((currentTime + millisDelay) >= global_time);    
 }
-int task_compare(const void *a, const void *b)
+
+void task_swap(task_t **tasks, int a, int b)
 {
-	task_t *ta = (task_t *)a;
-	task_t *tb = (task_t *)b;
-	if (ta->T > tb->T) return 1;
-	else if (ta->T < tb->T) return -1;
-	else return 0;
+    task_t *tmp = tasks[a];
+    tasks[a] = tasks[b];
+    tasks[b] = tmp;
 }
+
+void task_sort(task_t **tasks, size_t n)
+{
+    size_t i,j;
+    for(i = 0; i < n; i++)
+        for(j = i+1; j < n; j++)
+        {
+            if(tasks[i]->T > tasks[j]->T)
+                task_swap(tasks, i, j);
+        }
+}
+
 int task_create_handler(task_t *tasks, size_t n)
 {
-	printf("Creating %d tasks\n", (int)n);
 	if(n > 64)
 		return -EINVAL;
 
 	task_t *sorted_tasks[n];
 	size_t i;
 	for(i = 0; i < n; i++)
-		sorted_tasks[i] = &(tasks[i]);
-	//qsort(sorted_tasks, n, sizeof(task_t *), task_compare);
-	/* checks if tasks point to valid regin of code */
-	/* check if tasks are schedulable */
-	/* sorts tasks by priority RMA */
+	{
+        /* Edit: No restriction on stack pointer 
+        if((tasks[i].stack_pos < USR_START_ADDR) && 
+           (tasks[i].stack_pos > USR_END_ADDR)
+            return -EINVAL;
+        */
+        
+        if(((unsigned)(tasks[i].lambda) < USR_START_ADDR) && 
+           ((unsigned)(tasks[i].lambda) > USR_END_ADDR))
+            return -EFAULT;
+
+        if(((unsigned)(tasks[i].data) < USR_START_ADDR) && 
+           ((unsigned)(tasks[i].data) > USR_END_ADDR))
+            return -EFAULT;
+
+        if(tasks[i].C >= tasks[i].T)
+            return -ESCHED;
+
+        /*Todo: check if tasks are schedulable (UB test)*/
+        sorted_tasks[i] = &(tasks[i]);
+	}
+
+    /* Sort tasks by priority - RMA */
+    task_sort(sorted_tasks, n);
+    for (i = 0; i < n; i++)
+        printf("P:%d T:%d\n", (int)i, (int)sorted_tasks[i]->T);
 	
 	/* Allocate */
 	allocate_tasks(sorted_tasks, n);
@@ -269,44 +300,52 @@ int C_SWI_Handler(int swiNum, int *regs)
 {    
     switch (swiNum) 
     {       
-        // ssize_t read(int fd, void *buf, size_t count);
+        /* ssize_t read(int fd, void *buf, size_t count); */
         case READ_SWI:
             return read_handler(regs[0], (void *) regs[1], (size_t) regs[2]);
         
-        // ssize_t write(int fd, const void *buf, size_t count);
+        /* ssize_t write(int fd, const void *buf, size_t count); */
         case WRITE_SWI:
             return write_handler((int) regs[0], (void *) regs[1], (size_t) regs[2]);
         
-        // void exit(int status);
-        /* No longer implemented
+        /* 
+         * No longer implemented 
+         *void exit(int status);
+        */
+        /* 
         case EXIT_SWI:
             exit_handler((int) regs[0]); // never returns
             return -1;
         */
 
-        // void sleep(unsigned long delay);
+        /* void sleep(unsigned long delay); */
         case SLEEP_SWI:
             sleep_handler((unsigned long)regs[0]);
             return 0;
         
-        // unsigned long time();
+        /* unsigned long time(); */
         case TIME_SWI:
             return time_handler();
         
+        /* int task_create(tast_t *task, size_t n) */
         case CREATE_SWI:
         	return task_create_handler((task_t *)regs[0], (size_t)regs[1]);
         
+        /* int event_wait(int dev) */
         case EVENT_WAIT:
             return event_wait_handler((unsigned)regs[0]);
 
+        /* int mutex_create() */
         case MUTEX_CREATE:
-            return mutex_create();
-
+            return mutex_create_handler();
+        
+        /* int mutex_lock(int mutex_id) */
         case MUTEX_LOCK:
-            return mutex_lock((int)regs[0]);
-
+            return mutex_lock_handler((int)regs[0]);
+        
+        /* int mutex_unlock(int mutex_id) */
         case MUTEX_UNLOCK:
-            return mutex_unlock((int)regs[0]);
+            return mutex_unlock_handler((int)regs[0]);
 
         default:
             printf("Error in ref C_SWI_Handler: Invalid SWI number.");
@@ -322,7 +361,9 @@ void C_IRQ_Handler()
     /* Read Pending Interrupts Register */
     uint32_t icpr = reg_read(INT_ICPR_ADDR);
 
-    /* Check if the 26th (Interrupt Match 0) bit is set */
+    /* Check if the 26th (Interrupt Match 0) bit is set
+     * If so run the appropriate handler
+     */
     if(bit_isset(icpr, INT_OSTMR_0))
         C_Timer_0_Handler();
 
@@ -364,20 +405,22 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
     reg_set(OSTMR_OIER_ADDR, OSTMR_OIER_E0); /* Enable match 0 */
 
 
-
-    /** Jump to user program. **/
+    /* Initialize devices and mutexes */
     dev_init();
     mutex_init();
+
+    /* Initialize kernel time */
     global_time = 0;
-    printf("Starting User Mode with user_stack = %p\n", spTop);
+
+    /* Run user program */
     user_setup(spTop);
 
 
     /* Leftover from Lab 3 -- this code should never execute */
-    /** Restore SWI Handler. **/
     restore_handlers(SWI_VECT_ADDR, old_swi_instr_1, old_swi_instr_2);
     restore_handlers(IRQ_VECT_ADDR, old_irq_instr_1, old_irq_instr_2);
     reg_write(INT_ICLR_ADDR, old_iclr);
     printf("global_time final = %ld\n", global_time);
-	assert(0);  
+	
+    assert(0);  
 }

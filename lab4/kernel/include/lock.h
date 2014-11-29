@@ -34,8 +34,8 @@ struct cond
 typedef struct cond cond_t;
 
 void mutex_init(void);	/* a function for initiating mutexes */
-int mutex_create(void);
-int mutex_lock(int mutex);
-int mutex_unlock(int mutex);
+int mutex_create_handler(void);
+int mutex_lock_handler(int mutex);
+int mutex_unlock_handler(int mutex);
 
 #endif /* _LOCK_H_ */

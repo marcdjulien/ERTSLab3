@@ -37,7 +37,7 @@ void mutex_init()
 	next_mutex = 0;
 }
 
-int mutex_create(void)
+int mutex_create_handler(void)
 {
 	if(next_mutex >= 32)
 		return -ENOMEM;
@@ -49,7 +49,7 @@ int mutex_create(void)
 	}
 }
 
-int mutex_lock(int mutex  __attribute__((unused)))
+int mutex_lock_handler(int mutex  __attribute__((unused)))
 {
 	/* Invalid number */
 	if((mutex >= OS_NUM_MUTEX) || (mutex <= 0))
@@ -75,7 +75,7 @@ int mutex_lock(int mutex  __attribute__((unused)))
 	return 0;
 }
 
-int mutex_unlock(int mutex  __attribute__((unused)))
+int mutex_unlock_handler(int mutex  __attribute__((unused)))
 {
 	/* Invalid number */
 	if((mutex >= OS_NUM_MUTEX) || (mutex <= 0))
