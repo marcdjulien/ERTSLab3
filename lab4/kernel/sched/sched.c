@@ -82,7 +82,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 		cur_tcb->context.lr = (void *)launch_task;
 		cur_tcb->context.sp = cur_tcb->kstack_high;
 
-		cur_tcb->holds_lock = FALSE;
+		cur_tcb->holds_lock = 0;
 		cur_tcb->sleep_queue = NULL;
 
 		/* Set task to be runnable by adding to run queue */

@@ -57,7 +57,7 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 
 	mutex_t *m = &(gtMutex[mutex]);
 	tcb_t *cur_tcb = get_cur_tcb();
-	
+
 	/* Mutex not created */
 	if(!m->bAvailable)
 		return -EINVAL;
@@ -69,10 +69,20 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 	/* Wait until acquired */
 	if(m->bLock)
 	{
-		m->pSleep_queue = cur_tcb;
+		if(m->pSleep_queue == NULL) /* First on queue */
+			m->pSleep_queue = cur_tcb;
+		else /* Traverse queue until last tcb */
+		{
+			tcb_t *temp = m->pSleep_queue;
+			while(temp->sleep_queue != NULL)
+				temp = temp->sleep_queue;
+			/* Found last tcb */
+			temp->sleep_queue = cur_tcb;
+		}
+
 		dispatch_sleep();
 	}
-	cur_tcb->holds_lock = TRUE;
+	cur_tcb->holds_lock++;
 	return 0;
 }
 
@@ -99,7 +109,12 @@ int mutex_unlock_handler(int mutex  __attribute__((unused)))
 	{
 		/* Wake up waiting task */
 		runqueue_add(m->pSleep_queue, m->pSleep_queue->cur_prio);
-		m->pSleep_queue = NULL;
+		/* Remove from sleep queue by setting it to next tcb */
+		tcb_t *temp = m->pSleep_queue->sleep_queue;
+		m->pSleep_queue->sleep_queue = NULL;
+		m->pSleep_queue->holds_lock--;
+		m->pSleep_queue = temp;
+		
 	}
 
 	cur_tcb->holds_lock = FALSE;

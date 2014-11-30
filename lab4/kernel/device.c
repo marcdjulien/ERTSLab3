@@ -63,8 +63,20 @@ void dev_init(void)
  */
 void dev_wait(unsigned int dev __attribute__((unused)))
 {
-	devices[dev].sleep_queue = get_cur_tcb();
+	dev_t *device = &(devices[dev]);
+	if(device->sleep_queue == NULL) /* First on Q */
+		device->sleep_queue = get_cur_tcb();
+	else /* Traverse until last one is found */
+	{
+		tcb_t *temp = device->sleep_queue;
+		while(temp->sleep_queue != NULL)
+			temp = temp->sleep_queue;
+		/* Found last tcb */
+		temp->sleep_queue = get_cur_tcb();
+	}
+	/* Put to sleep */
 	dispatch_sleep();
+
 }
 
 
@@ -82,18 +94,26 @@ void dev_update(unsigned long millis __attribute__((unused)))
 	int call_dispatch = 0;
 	for(i = 0; i < NUM_DEVICES; i++)
 	{
+		dev_t *device = &(devices[i]);
 		/* Match detected */
-		if(millis > devices[i].next_match)
+		if(millis > device->next_match)
 		{
 
-			/* Add all (1) tasks to run queue */
-			tcb_t *tcb = devices[i].sleep_queue;
-			if(tcb != NULL)
+			/* Add all tasks back to run queue */
+			tcb_t *tcb = device->sleep_queue;
+			tcb_t *temp;
+			while(tcb != NULL)
 			{
 				call_dispatch |= 1;
 				runqueue_add(tcb, tcb->cur_prio);
+				temp = tcb->sleep_queue;
+				tcb->sleep_queue = NULL;
+				tcb = temp;
 			}
-			devices[i].next_match += dev_freq[i];
+			/* Clear sleep queue */
+			device->sleep_queue = NULL;
+			/* Update next match */
+			device->next_match += dev_freq[i];
 		}
 	}
 
