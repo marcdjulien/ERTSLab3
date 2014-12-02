@@ -57,16 +57,16 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 
 	/* Add tasks to queue */
 	size_t i;
-	for(i = 1; i < num_tasks; i++)
+	for(i = 0; i < num_tasks; i++)
 	{
 		/* Get TCB Struct*/
-		tcb_t *cur_tcb = (tcb_t *)(&(system_tcb[i]));
+		tcb_t *cur_tcb = (tcb_t *)(&(system_tcb[i+1]));
 		/* Get Task Struct */
-		task_t *cur_task = tasks[i-1];
+		task_t *cur_task = tasks[i];
 		
 		/* Set priorities (already in order) */
-		cur_tcb->native_prio = i; 
-		cur_tcb->cur_prio = i;    
+		cur_tcb->native_prio = i+1; 
+		cur_tcb->cur_prio = i+1;    
 		
 		/* Initialize r4,r5,r6 for launch_task */
 		cur_tcb->context.r4 = (uint32_t)cur_task->lambda;
@@ -91,7 +91,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 	}
 
 	/* Create and add idle task */
-	tcb_t *idle_tcb = (tcb_t *)(&(system_tcb[num_tasks]));
+	tcb_t *idle_tcb = (tcb_t *)(&(system_tcb[num_tasks+1]));
 	idle_tcb->context.r4 = (uint32_t)idle;
 	idle_tcb->context.lr = (void *)launch_task;
 	idle_tcb->context.sp = (void *)idle_tcb->kstack_high;

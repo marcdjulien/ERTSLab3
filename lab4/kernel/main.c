@@ -207,9 +207,10 @@ void sleep_handler(unsigned long millisDelay)
 
 int task_create_handler(task_t *tasks, size_t n)
 {
+    
     if(n > 62)
 		return -EINVAL;
-    
+
     task_t *taskList[n];
     /* Check task validity */
     size_t i;
@@ -238,7 +239,7 @@ int task_create_handler(task_t *tasks, size_t n)
     int ret = assign_schedule(taskList, n);
     if(ret == 0)
         return -ESCHED;
-
+    printf("num of tasks is stilll %d",(int)n);
     /* Allocate */
     allocate_tasks(taskList, n);
 

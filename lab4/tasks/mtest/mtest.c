@@ -23,7 +23,7 @@ void fun1(void* str)
 	{	
 		mutex_lock(m0);
 		puts("mutex m0 locked in t1");
-		sleep(2500);
+		//sleep(2500);
 		mutex_lock(m1);
 		puts("mutex m1 locked in t1");
 		putchar((int)str);
@@ -31,6 +31,7 @@ void fun1(void* str)
 		puts("mutex m1 unlocked in t1");
 		mutex_unlock(m0);
 		puts("mutex m0 unlocked in t1");
+		//sleep(50);
 		if (event_wait(0) < 0)
 			panic("Dev 0 failed");
 		
@@ -43,7 +44,7 @@ void fun2(void* str)
 	{
 		mutex_lock(m1);
 		puts("mutex m1 locked in t2");
-		sleep(2500);
+		//sleep(2500);
 		mutex_lock(m0);
 		puts("mutex m0 locked in t2");
 		putchar((int)str);

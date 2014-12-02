@@ -52,6 +52,7 @@ int mutex_create_handler(void)
 
 int mutex_lock_handler(int mutex  __attribute__((unused)))
 {
+	disable_interrupts();
 	/* Invalid number */
 	if((mutex >= OS_NUM_MUTEX) || (mutex <= 0))
 		return -EINVAL;
@@ -89,16 +90,17 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 	
 	if(cur_tcb->cur_prio != HIGHEST_PRIO)
 	{
+		//runqueue_add(cur_tcb, HIGHEST_PRIO);
 		cur_tcb->cur_prio = HIGHEST_PRIO;
-		runqueue_add(cur_tcb, cur_tcb->cur_prio);
-		dispatch_save();
+		//dispatch_save();
 	}
-
+	enable_interrupts();
 	return 0;
 }
 
 int mutex_unlock_handler(int mutex  __attribute__((unused)))
 {
+	disable_interrupts();
 	/* Invalid number */
 	if((mutex >= OS_NUM_MUTEX) || (mutex <= 0))
 		return -EINVAL;
@@ -131,12 +133,15 @@ int mutex_unlock_handler(int mutex  __attribute__((unused)))
 	}
 
 	cur_tcb->holds_lock--;
+	cur_tcb->cur_prio = cur_tcb->native_prio;
+		
 	if(cur_tcb->holds_lock == 0)
 	{
 		cur_tcb->cur_prio = cur_tcb->native_prio;
-		runqueue_add(cur_tcb, cur_tcb->cur_prio);
-		dispatch_save();
+		//runqueue_add(cur_tcb, cur_tcb->cur_prio);
+		//dispatch_save();
 	}
+	enable_interrupts();
 	return 0;
 }
 

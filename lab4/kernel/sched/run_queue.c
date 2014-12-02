@@ -86,7 +86,7 @@ void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute
 		run_bits[y] |= 1 << x;
 	}
 	else
-		printf("Error: Queue is not empty\n");
+		printf("Error: Queue %d is not empty\n", prio);
 }
 
 
