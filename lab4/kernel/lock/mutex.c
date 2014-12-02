@@ -17,9 +17,9 @@
 #include <bits/errno.h>
 #include <arm/psr.h>
 #include <arm/exception.h>
-#ifdef DEBUG_MUTEX
+//#ifdef DEBUG_MUTEX
 #include <exports.h> // temp
-#endif
+//#endif
 
 mutex_t gtMutex[OS_NUM_MUTEX];
 static int next_mutex;
@@ -55,7 +55,7 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 	if((mutex >= OS_NUM_MUTEX) || (mutex <= 0))
 		return -EINVAL;
 
-	mutex_t *m = &(gtMutex[mutex]);
+	mutex_t *m = &(gtMutex[mutex-1]);
 	tcb_t *cur_tcb = get_cur_tcb();
 
 	/* Mutex not created */
@@ -83,6 +83,8 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 		dispatch_sleep();
 	}
 	cur_tcb->holds_lock++;
+	m->bLock = TRUE;
+	m->pHolding_Tcb = cur_tcb;
 	return 0;
 }
 
@@ -92,7 +94,7 @@ int mutex_unlock_handler(int mutex  __attribute__((unused)))
 	if((mutex >= OS_NUM_MUTEX) || (mutex <= 0))
 		return -EINVAL;
 
-	mutex_t *m = &(gtMutex[mutex]);
+	mutex_t *m = &(gtMutex[mutex-1]);
 	tcb_t *cur_tcb = get_cur_tcb();
 
 	/* Mutex not created */
@@ -103,8 +105,10 @@ int mutex_unlock_handler(int mutex  __attribute__((unused)))
 	if(m->pHolding_Tcb != cur_tcb)
 		return -EPERM;
 
-	if(m->pSleep_queue == NULL)
+	if(m->pSleep_queue == NULL){
 		m->bLock = 0;
+		m->pHolding_Tcb = NULL;	
+	}
 	else
 	{
 		/* Wake up waiting task */

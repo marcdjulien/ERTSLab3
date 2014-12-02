@@ -38,7 +38,7 @@ typedef struct dev dev_t;
 
 /* devices will be periodically signaled at the following frequencies */
 /* Todo: Change periods back !!!! */
-const unsigned long dev_freq[NUM_DEVICES] = {500, 750, 2000, 5000};//{100, 200, 500, 50};
+const unsigned long dev_freq[NUM_DEVICES] = {100, 200, 500, 50};//{500, 750, 2000, 5000};//;
 static dev_t devices[NUM_DEVICES];
 
 /**

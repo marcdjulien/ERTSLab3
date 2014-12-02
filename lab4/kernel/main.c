@@ -201,7 +201,7 @@ unsigned long time_handler()
 void sleep_handler(unsigned long millisDelay)
 {   
     unsigned long currentTime = global_time;
-    while((currentTime + millisDelay) >= global_time);    
+    while((currentTime + millisDelay) >= global_time); 
 }
 
 void task_swap(task_t **tasks, int a, int b)
@@ -300,6 +300,7 @@ int C_SWI_Handler(int swiNum, int *regs)
 {    
     switch (swiNum) 
     {       
+        printf("SWI BEING CALLED: %d", swiNum);
         /* ssize_t read(int fd, void *buf, size_t count); */
         case READ_SWI:
             return read_handler(regs[0], (void *) regs[1], (size_t) regs[2]);
