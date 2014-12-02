@@ -83,8 +83,16 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 		dispatch_sleep();
 	}
 	cur_tcb->holds_lock++;
-	m->bLock = TRUE;
 	m->pHolding_Tcb = cur_tcb;
+	if(cur_tcb->cur_prio != HIGHEST_PRIO)
+	{
+
+	}
+	m->bLock = TRUE;
+
+	cur_tcb->cur_prio = HIGHEST_PRIO;
+	runqueue_add(cur_tcb, cur_tcb>cur_prio);
+	dispatch_save()
 	return 0;
 }
 
@@ -121,7 +129,10 @@ int mutex_unlock_handler(int mutex  __attribute__((unused)))
 		
 	}
 
-	cur_tcb->holds_lock = FALSE;
+	cur_tcb->holds_lock--;
+	//chage back prio if hold lock == 0
+	//add to run q
+	//dispatch save
 	return 0;
 }
 

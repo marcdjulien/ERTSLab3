@@ -57,7 +57,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 
 	/* Add tasks to queue */
 	size_t i;
-	for(i = 0; i < num_tasks; i++)
+	for(i = 1; i < num_tasks; i++)
 	{
 		/* Get TCB Struct*/
 		tcb_t *cur_tcb = (tcb_t *)(&(system_tcb[i]));

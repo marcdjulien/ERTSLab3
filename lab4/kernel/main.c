@@ -204,61 +204,47 @@ void sleep_handler(unsigned long millisDelay)
     while((currentTime + millisDelay) >= global_time); 
 }
 
-void task_swap(task_t **tasks, int a, int b)
-{
-    task_t *tmp = tasks[a];
-    tasks[a] = tasks[b];
-    tasks[b] = tmp;
-}
-
-void task_sort(task_t **tasks, size_t n)
-{
-    size_t i,j;
-    for(i = 0; i < n; i++)
-        for(j = i+1; j < n; j++)
-        {
-            if(tasks[i]->T > tasks[j]->T)
-                task_swap(tasks, i, j);
-        }
-}
 
 int task_create_handler(task_t *tasks, size_t n)
 {
-	if(n > 64)
+	if(n > 62)
 		return -EINVAL;
 
-	task_t *sorted_tasks[n];
-	size_t i;
-	for(i = 0; i < n; i++)
-	{
+    /* Check task validity */
+    size_t i;
+    for(i = 0; i < n; i++)
+    {
         /* Edit: No restriction on stack pointer 
-        if((tasks[i].stack_pos < USR_START_ADDR) && 
-           (tasks[i].stack_pos > USR_END_ADDR)
+        if((tasks[i]->stack_pos < USR_START_ADDR) && 
+           (tasks[i]->stack_pos > USR_END_ADDR)
             return -EINVAL;
         */
         
-        if(((unsigned)(tasks[i].lambda) < USR_START_ADDR) && 
-           ((unsigned)(tasks[i].lambda) > USR_END_ADDR))
+        if(((unsigned)(tasks[i].lambda) < USR_START_ADDR) || 
+           ((unsigned)(tasks[i].lambda) > USR_END_ADDR)){
+            printf("task lambda has improper bounds\n");
             return -EFAULT;
+        }
 
         if(((unsigned)(tasks[i].data) < USR_START_ADDR) && 
-           ((unsigned)(tasks[i].data) > USR_END_ADDR))
+           ((unsigned)(tasks[i].data) > USR_END_ADDR)){
+            printf("task data has improper bounds\n");
             return -EFAULT;
-
-        if(tasks[i].C >= tasks[i].T)
+        }
+         
+        if(tasks[i].C >= tasks[i].T){
+            printf("task.C higher than task.T\n");   
             return -ESCHED;
+        }
+    }
 
-        /*Todo: check if tasks are schedulable (UB test)*/
-        sorted_tasks[i] = &(tasks[i]);
-	}
+    /* Perform UB test */
+	int ret = assign_schedule(&tasks, n);
+	if(ret == 0)
+        return -ESCHED;
 
-    /* Sort tasks by priority - RMA */
-    task_sort(sorted_tasks, n);
-    for (i = 0; i < n; i++)
-        printf("P:%d T:%d\n", (int)i, (int)sorted_tasks[i]->T);
-	
 	/* Allocate */
-	allocate_tasks(sorted_tasks, n);
+	allocate_tasks(tasks, n);
 
 	/* Start running the first high prio task */
 	dispatch_nosave();
