@@ -45,6 +45,9 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
+	if(cur_tcb->cur_prio == HIGHEST_PRIO)
+		return;
+
 	tcb_t *dest, *temp;
 	temp = cur_tcb;
 	uint8_t hp = highest_prio();

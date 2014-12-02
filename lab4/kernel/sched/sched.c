@@ -62,7 +62,7 @@ void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  _
 		/* Get TCB Struct*/
 		tcb_t *cur_tcb = (tcb_t *)(&(system_tcb[i]));
 		/* Get Task Struct */
-		task_t *cur_task = tasks[i];
+		task_t *cur_task = tasks[i-1];
 		
 		/* Set priorities (already in order) */
 		cur_tcb->native_prio = i; 

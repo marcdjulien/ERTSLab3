@@ -30,4 +30,6 @@
 /* OS_NUM_MUTEX must be at lease 32 */
 #define OS_NUM_MUTEX	32
 
+#define HIGHEST_PRIO 	0
+
 #endif /* _CONFIG_H_ */

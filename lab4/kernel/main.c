@@ -207,9 +207,10 @@ void sleep_handler(unsigned long millisDelay)
 
 int task_create_handler(task_t *tasks, size_t n)
 {
-	if(n > 62)
+    if(n > 62)
 		return -EINVAL;
-
+    
+    task_t *taskList[n];
     /* Check task validity */
     size_t i;
     for(i = 0; i < n; i++)
@@ -226,37 +227,32 @@ int task_create_handler(task_t *tasks, size_t n)
             return -EFAULT;
         }
 
-        if(((unsigned)(tasks[i].data) < USR_START_ADDR) && 
-           ((unsigned)(tasks[i].data) > USR_END_ADDR)){
-            printf("task data has improper bounds\n");
-            return -EFAULT;
-        }
-         
         if(tasks[i].C >= tasks[i].T){
             printf("task.C higher than task.T\n");   
             return -ESCHED;
         }
+        taskList[i] = &(tasks[i]);
     }
-
+    
     /* Perform UB test */
-	int ret = assign_schedule(&tasks, n);
-	if(ret == 0)
+    int ret = assign_schedule(taskList, n);
+    if(ret == 0)
         return -ESCHED;
 
-	/* Allocate */
-	allocate_tasks(tasks, n);
+    /* Allocate */
+    allocate_tasks(taskList, n);
 
-	/* Start running the first high prio task */
-	dispatch_nosave();
+    /* Start running the first high prio task */
+    dispatch_nosave();
 
-	return -ESCHED;
+    return -ESCHED;
 }
 
 int event_wait_handler(unsigned dev)
 {
     disable_interrupts();
     if(dev < 4)
-	{
+    {
         dev_wait(dev);
         return 0;
     }

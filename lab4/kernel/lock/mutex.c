@@ -12,6 +12,7 @@
 //#define DEBUG_MUTEX
 
 #include <lock.h>
+#include <config.h>
 #include <task.h>
 #include <sched.h>
 #include <bits/errno.h>
@@ -82,17 +83,17 @@ int mutex_lock_handler(int mutex  __attribute__((unused)))
 
 		dispatch_sleep();
 	}
+	m->bLock = TRUE;
 	cur_tcb->holds_lock++;
 	m->pHolding_Tcb = cur_tcb;
+	
 	if(cur_tcb->cur_prio != HIGHEST_PRIO)
 	{
-
+		cur_tcb->cur_prio = HIGHEST_PRIO;
+		runqueue_add(cur_tcb, cur_tcb->cur_prio);
+		dispatch_save();
 	}
-	m->bLock = TRUE;
 
-	cur_tcb->cur_prio = HIGHEST_PRIO;
-	runqueue_add(cur_tcb, cur_tcb>cur_prio);
-	dispatch_save()
 	return 0;
 }
 
@@ -130,9 +131,12 @@ int mutex_unlock_handler(int mutex  __attribute__((unused)))
 	}
 
 	cur_tcb->holds_lock--;
-	//chage back prio if hold lock == 0
-	//add to run q
-	//dispatch save
+	if(cur_tcb->holds_lock == 0)
+	{
+		cur_tcb->cur_prio = cur_tcb->native_prio;
+		runqueue_add(cur_tcb, cur_tcb->cur_prio);
+		dispatch_save();
+	}
 	return 0;
 }
 
