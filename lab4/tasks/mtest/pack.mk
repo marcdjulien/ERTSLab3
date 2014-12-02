@@ -1,0 +1,6 @@
+PROGS_MTEST_OBJS := mtest.o
+PROGS_MTEST_OBJS := $(PROGS_MTEST_OBJS:%=$(TDIR)/mtest/%)
+ALL_OBJS += $(PROGS_MTEST_OBJS)
+
+$(TDIR)/bin/mtest : $(TSTART) $(PROGS_MTEST_OBJS) $(TLIBC)
+
