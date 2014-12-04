@@ -235,11 +235,10 @@ int task_create_handler(task_t *tasks, size_t n)
         taskList[i] = &(tasks[i]);
     }
     
-    /* Perform UB test */
+    /* Perform UB test and sort tasks*/
     int ret = assign_schedule(taskList, n);
     if(ret == 0)
         return -ESCHED;
-    printf("num of tasks is stilll %d",(int)n);
     /* Allocate */
     allocate_tasks(taskList, n);
 
